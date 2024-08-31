@@ -1,0 +1,116 @@
+<%- include('../layouts/user/header.ejs') -%>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" id="sidebarMenu">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link " href="/profile">
+                            Personal Information
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            My Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manage-address">
+                            Manage Address
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <div id="personal-info" class="content-section d-flex justify-content-center align-items-center">
+                <div class="card shadow" style="width: 40rem; margin-top: 70px; border-radius: 15px; margin-bottom: 80px; right: 150px;">
+                    <div class="card-body" style="padding: 30px; border-radius: 15px;">
+                        <h2 class="card-title text-center mt-3">Personal Information</h2>
+                        
+                        <div class="user-details mt-5">
+                            <h4 class="user-heading-1 mb-3">Name: <span class="text-muted"><%= user.name %></span></h4>
+                            <h4 class="user-heading-2 mb-3">Email: <span class="text-muted"><%= user.email %></span></h4>
+                            <h4>Mobile: <span class="text-muted"><%= user.mobile %></span></h4>
+                        </div>
+                        <div class="btn-group mt-5 d-flex justify-content-center">
+                            <a href="/edit-profile">
+                                <button class="btn btn-edit-profile" style="background-color:rgba(222, 171, 112, 0.956);">Edit</button>
+                            </a>
+                            <a href="/change-password" style="margin-left: 10px; ">
+                                <button class="btn btn-change-password " style="font-size: 15px; background-color: rgba(222, 171, 112, 0.956);;">Change Password</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<%- include('../layouts/user/footer.ejs') -%>
+
+<style>
+    /* Card Shadow */
+    .card.shadow {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Button Styling */
+    .btn-edit-profile, .btn-change-password {
+        background-color: #007bff;
+        color: white;
+        width: 150px;
+        height: 40px;
+        border-radius: 5px;
+        border: none;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-edit-profile:hover, .btn-change-password:hover {
+        background-color: #0056b3;
+        color: #fff;
+    }
+
+    /* User Details Styling */
+    .user-details h4 {
+        font-size: 18px;
+        font-weight: normal;
+    }
+
+    .user-details h4 .text-muted {
+        font-weight: bold;
+        color: #6c757d;
+    }
+
+    /* Sidebar Active Link Styling */
+    .nav-link.active {
+        background-color: #e9ecef;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    /* General Styles */
+    .container-fluid {
+        padding-top: 20px;
+    }
+
+    .sidebar-sticky ul.nav.flex-column {
+        padding-top: 20px;
+    }
+
+    .card-body {
+        border: 1px solid #ddd;
+    }
+
+    /* Button Group Styling */
+    .btn-group .btn {
+        margin-right: 10px;
+    }
+</style>

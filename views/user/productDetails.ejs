@@ -1,0 +1,157 @@
+<%- include('../layouts/user/header.ejs') -%>
+
+<main class="main">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+        <div class="container d-flex align-items-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/shop">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><%= product.productName %></li>
+            </ol>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="container">
+            <div class="product-details-top">
+                <div class="row">
+                    <!-- Product Images -->
+                    <div class="col-md-6">
+                        <div class="product-gallery product-gallery-vertical">
+                            <div class="row">
+                                <figure class="product-main-image">
+                                    <% if (product.productImage && product.productImage.length > 0) { %>
+                                        <img id="product-zoom" src="<%= product.productImage[0] %>" data-zoom-image="<%= product.productImage[0] %>" alt="product image" style="width:450px; height: 550px; object-fit: cover;">
+                                    <% } %>
+                                </figure>
+                                <div id="product-zoom-gallery" class="product-image-gallery">
+                                    <% product.productImage.forEach((image, index) => { %>
+                                        <a class="product-gallery-item <%= index === 0 ? 'active' : '' %>" href="#" data-image="<%= image %>" data-zoom-image="<%= image %>">
+                                            <img src="<%= image %>" alt="Product image">
+                                        </a>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-md-6">
+                        <div class="product-details">
+                            <h1 class="product-title"><%= product.productName %></h1>
+                            <div class="ratings-container">
+                                <div class="ratings">
+                                    <div class="ratings-val" style="width: 80%;"></div>
+                                </div>
+                                <a class="ratings-text" href="#product-review-link">(2 Reviews)</a>
+                            </div>
+                            <div class="product-price">
+                                Rs: <%= product.price %>
+                            </div>
+                            <div class="product-status">
+                                <% if (product.status === 'in Stock') { %>
+                                    <h5 class="status" style="color: green;">In Stock</h5>
+                                <% } else { %>
+                                    <h5 class="status" style="color: red;"><%= product.status %></h5>
+                                <% } %>
+                            </div>
+                            <div class="product-stock">
+                                <p class="p-stock"> (<%= product.quantity %> stocks only left)</p>
+
+                            </div>
+                            <div class="product-content">
+                                <p><%= product.description %></p>
+                            </div>
+                            <div class="product-details-action">
+                                <% if (product.status === 'in Stock') { %>
+                                    <button class="btn-cart" onclick="addToCart('<%= product._id %>')"><span>Add to Cart</span></button>
+                                <% } else { %>
+                                    <button class="btn-cart disabled" disabled style="background-color: grey; cursor: not-allowed;"><span>Out of Stock</span></button>
+                                <% } %>
+                                <div class="details-action-wrapper">
+                                    <a href="#" class="btn-product btn-wishlist"><span>Add to Wishlist</span></a>
+                                </div>
+                            </div>
+                            
+                            <div class="product-details-footer">
+                                <div class="product-cat">
+                                    <span>Category:</span>
+                                    <a href="#"><%= product.category.name %></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            <h2 class="title text-center mb-4">You May Also Like</h2>
+            <div class="row">
+                <% relatedProducts.forEach(relatedProduct => { %>
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="product product-7 text-center">
+                            <figure class="product-media">
+                                <a href="/productdetails/<%= relatedProduct._id %>">
+                                    <img src="<%= relatedProduct.productImage[0] %>" alt="Product image" class="product-image">
+                                </a>
+                                <div class="product-action-vertical">
+                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                </div>
+                                <div class="product-action">
+                                    <% if (cartProductIds.includes(relatedProduct._id.toString())) { %>
+                                        <a href="/cart" class="btn-product btn-cart"><span>Go to Cart</span></a>
+                                    <% } else { %>
+                                        <a href="/cart" class="btn-product btn-cart add-to-cart" data-product-id="<%= relatedProduct._id %>"><span>Add to Cart</span></a>
+                                    <% } %>
+                                </div>
+                            </figure>
+                            <div class="product-body">
+                                <div class="product-cat">
+                                    <a href="#"><%= relatedProduct.category.name %></a>
+                                </div>
+                                <h4 class="product-name"><%= relatedProduct.productName %></h4>
+                                <div class="product-price">
+                                    <h5>₹<%= relatedProduct.price %></h5>
+                                </div>
+                                <div class="ratings-container">
+                                    <div class="ratings">
+                                        <div class="ratings-val" style="width: 20%;"></div>
+                                    </div>
+                                    <span class="ratings-text">(2 Reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            
+        </div>
+    </div>
+</main>
+
+<script>
+    function addToCart(productId, quantity = 1) {
+        fetch('/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ productId, quantity })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Item added to cart');
+            } else {
+                alert('Failed to add item to cart');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+<%- include('../layouts/user/footer.ejs') -%>

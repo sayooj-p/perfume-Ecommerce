@@ -1,0 +1,84 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3>Product Details of Order</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">User</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">All Users</li>
+                </ul>
+            </div>
+            <div class="card" style="border-radius: 10px;">
+                <div class="card" style="border-radius: 10px;">
+                    <div class="row">
+            
+                        <!-- Left Column: Order Items Details -->
+                        <div class="col-lg-7 pe-5" >
+                          <div class="order-items mb-5">
+                            <div class="order-items-table">
+                              
+                
+                              <% order.orderItems.forEach(item => { %>
+                              <div class="order-item d-flex justify-between align-items-center">
+                                <div class="product-image" style="width: 80px; margin-bottom: 10px; margin-left: 10px; margin-top: 10px;">
+                                  <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.name %>">
+                                </div>
+                                <div class="item-details">
+                                  <h5 class="name "><%= item.product.name %></h5>
+                                  <p>Quantity: <%= item.quantity %></p>
+                                  <p>Price: ₹<%= item.price %></p>
+                                </div>
+                                <div class="item-total ">
+                                  <p>Total: ₹<%= item.quantity * item.price %></p>
+                                </div>
+                              </div>
+                              <% }); %>
+                            </div>
+                
+                            <!-- Cancel Order Button -->
+                            
+                          </div>
+                
+                          <!-- Order Summary -->
+                          <div class="order-summary mb-5" style=" margin-left: 10px;">
+                            <h4 class="text-muted mb-5">Order Summary</h4>
+                            <div class="summary-table"  style="margin-left: 20px;">
+                              <p><strong>Subtotal:</strong> ₹<%= order.orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0) %></p>
+                              <p><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
+                              <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                              <p><strong>Status:</strong> <%= order.status %></p>
+                              <p align-content-center><strong>Order Date:</strong> <%= new Date(order.createdOn).toLocaleString() %></p>
+                            </div>
+                          </div>
+                        </div>
+                
+                        <!-- Right Column: Shipping Address -->
+                        <div class="col-lg-5 ps-5 d-flex justify-content-center align-items-center">
+                          <div class="shipping-address mb-5 ">
+                            <h4 class="text-muted mb-4">Shipping Address</h4>
+                            <p><strong>Name:</strong> <%= order.address.name %></p>
+                            <p><strong>Address:</strong> <%= order.address.locality %>, <%= order.address.landmark %></p>
+                            <p><strong>City:</strong> <%= order.address.city %>, <%= order.address.state %></p>
+                            <p><strong>Pincode:</strong> <%= order.address.pincode %></p>
+                            <p><strong>Phone:</strong> <%= order.address.phone %></p>
+                            <p><strong>Alternate Phone:</strong> <%= order.address.altPhone %></p>
+                          </div>
+                        </div>
+                
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-page text-center mt-4">
+        <div class="body-text">Copyright © 2024 Remos. Design with <i class="icon-heart"></i> by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a>. All rights reserved.</div>
+    </div>
+</div>
+
+<%- include('../layouts/admin/footer.ejs') -%>
+
+

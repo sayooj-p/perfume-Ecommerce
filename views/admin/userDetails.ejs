@@ -1,0 +1,117 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3>All Users</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">User</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">All Users</li>
+                </ul>
+            </div>
+            <div class="card" style="border-radius: 10px;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <form class="form-search">
+                            <fieldset class="name">
+                                <input type="text" placeholder="Search here..." name="name" tabindex="2" value="" aria-required="true" required="">
+                            </fieldset>
+                            <div class="button-submit">
+                                <button type="submit"><i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table" style="border-collapse: collapse; border: 1px solid white; margin-top: 20px;">
+                            <thead>
+                                <tr style="border: none;">
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">UserId</th>
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Name</th>
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Email</th>
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <style>
+                                    .blocked-user{
+                                        color: red;
+                                    }
+                                </style>
+                                <% data.forEach(user => { %>
+                                    <tr class="<%= user.is_blocked ? 'blocked-user' : '' %>">
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= user._id %></td>
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= user.name %></td>
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= user.email %></td>
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle;">
+                                            <div class="d-flex justify-content-center">
+                                                <% if (user.is_blocked) { %>
+                                                    <a href="#" class="btn btn-success toggle-status" data-id="<%= user._id %>" style="width: 100px;">Unblock</a>
+                                                <% } else { %>
+                                                    <a href="#" class="btn btn-danger toggle-status" data-id="<%= user._id %>" style="width: 100px;">Block</a>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>Showing <%= data.length %> entries</div>
+                        <ul class="pagination mb-0">
+                            <% if (currentPage > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                                </li>
+                            <% } %>
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-page text-center mt-4">
+        <div class="body-text">Copyright © 2024 Remos. Design with <i class="icon-heart"></i> by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a>. All rights reserved.</div>
+    </div>
+</div>
+
+<%- include('../layouts/admin/footer.ejs') -%>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.toggle-status').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const id = this.dataset.id;
+                fetch(`/admin/userblock?id=${id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Reload the page to reflect the changes
+                            location.reload()
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred.');
+                    });
+            });
+        });
+    });
+</script>

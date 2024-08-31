@@ -1,0 +1,138 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Product List</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li>
+                        <a href="index.html"><div class="text-tiny">Dashboard</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <a href="#"><div class="text-tiny">Ecommerce</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <div class="text-tiny">Product List</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="wg-box">
+
+                <div class="flex items-center justify-between gap10 flex-wrap">
+                    <a class="tf-button style-1 w208" href="/admin/add-product"><i class="icon-plus"></i>Add new</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table" style="border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr class="table-head pl-4">
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Image</th>
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Product</th>
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold; width: 200px; ">Product ID</th> <!-- Set width for Product ID -->
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold; width: 100px;">Price</th> <!-- Set width for Price -->
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Quantity</th>
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Category</th>
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Status</th>
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <style>
+                                .status-stock {
+                                    color: green;
+                                }
+                                .status-unstock {
+                                    color: red;
+                                }
+                                .inactive {
+                                    color: red;
+                                }
+                                td {
+                                    padding: 8px; 
+                                    text-align: center; 
+                                    vertical-align: middle;
+                                    border-color: white;
+                                    font-size: small; 
+                                    font-weight: bold;
+                                }
+                            </style>
+                            <% products.forEach((product) => { %>
+                                <tr class="<%= product.isBlocked ? 'inactive' : '' %>">
+                                    <td style="width: 70px;"> <!-- Set a fixed width for images -->
+                                        <% product.productImage.forEach(image => { %>
+                                            <img src="<%= image %>" alt="<%= product.productName %>" style="width: 50px; height: auto; margin-right: 5px;">
+                                        <% }) %>
+                                    </td>
+                                    <td>
+                                        <div class="text"><%= product.productName %></div>
+                                    </td>
+                                    <td><%= product._id %></td> <!-- No need to style, CSS above handles it -->
+                                    <td><%= product.price %></td> <!-- No need to style, CSS above handles it -->
+                                    <td><%= product.quantity %></td>
+                                    <td><%= product.category.name %></td>
+                                    <td class="<%= product.status === 'in Stock' ? 'status-stock' : 'status-unstock' %>">
+                                        <%= product.status %>
+                                    </td>
+                                    <td>
+                                        <a href="/admin/edit-product/<%= product._id %>" class="btn btn-primary" style="margin-bottom: 5px; display: block;">Edit</a>
+                                        <% if (product.isBlocked) { %>
+                                            <a href="/admin/listproducts?id=<%= product._id %>" class="btn btn-success" style="display: block;">List</a>
+                                        <% } else { %>
+                                            <a href="/admin/unlistproducts?id=<%= product._id %>" class="btn btn-danger" style="display: block;">Unlist</a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="container">
+                    <div class="row">
+                        <div class="col text-end">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-lg justify-content-end">
+                                    <% if (currentPage > 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= currentPage - 1 %>">&laquo; Previous</a>
+                                        </li>
+                                    <% } else { %>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">&laquo; Previous</span>
+                                        </li>
+                                    <% } %>
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <% if (i === currentPage) { %>
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link"><%= i %></span>
+                                            </li>
+                                        <% } else { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                            </li>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (currentPage < totalPages) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= currentPage + 1 %>">Next &raquo;</a>
+                                        </li>
+                                    <% } else { %>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Next &raquo;</span>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

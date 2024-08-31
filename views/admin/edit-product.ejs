@@ -1,0 +1,182 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Edit Product</h3>
+            </div>
+
+            <form action="/admin/update-product/<%= product._id %>" method="post" enctype="multipart/form-data" class="tf-section-2 form-edit-product" id="validateform">
+                <div class="wg-box">
+                    <div class="cols gap22">
+                        <!-- Product Name -->
+                        <fieldset class="name">
+                            <div class="body-title mb-10">Product name <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter product name" id="productName" name="productName" value="<%= product.productName %>" tabindex="0" required>
+                            <div class="error-message" style="color: red;" id="error-name"></div>
+                        </fieldset>
+
+                        <!-- Quantity -->
+                        <fieldset class="quantity">
+                            <div class="body-title mb-10">Quantity <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="number" placeholder="Enter product quantity" id="quantity" name="quantity" value="<%= product.quantity %>" tabindex="0" required>
+                            <div class="error-message" style="color: red;" id="error-quantity"></div>
+                        </fieldset>
+                    </div>
+
+                    <div class="cols gap22">
+                        <!-- Category -->
+                        <fieldset class="category">
+                            <div class="body-title mb-10">Category <span class="tf-color-1">*</span></div>
+                            <select class="mb-10" name="category" id="category" required>
+                                <% console.log(categories)%>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat._id %>"><%= cat.name %></option>
+                                <% }) %>
+                            </select>
+                            <div class="error-message" style="color: red;" id="error-category"></div>
+                        </fieldset>
+
+                        <!-- Status -->
+                        <fieldset class="status">
+                            <div class="body-title mb-10">Status <span class="tf-color-1">*</span></div>
+                            <select class="mb-10" name="status" id="status" required>
+                                <option value="Active" <%= product.status === 'Active' ? 'selected' : '' %>>Active</option>
+                                <option value="Inactive" <%= product.status === 'Inactive' ? 'selected' : '' %>>Inactive</option>
+                            </select>
+                            <div class="error-message" style="color: red;" id="error-status"></div>
+                        </fieldset>
+                    </div>
+
+                    <div class="cols gap22">
+                        <!-- Price -->
+                        <fieldset class="price">
+                            <div class="body-title mb-10">Price <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="number" placeholder="Enter product price" id="price" name="price" value="<%= product.price %>" tabindex="0" required>
+                            <div class="error-message" style="color: red;" id="error-price"></div>
+                        </fieldset>
+                    </div>
+
+                    <!-- Description -->
+                    <fieldset class="description">
+                        <div class="body-title mb-10">Description <span class="tf-color-1">*</span></div>
+                        <textarea class="mb-10" placeholder="Enter product description" id="description" name="description" tabindex="0" required><%= product.description %></textarea>
+                        <div class="error-message" style="color: red;" id="error-description"></div>
+                    </fieldset>
+                </div>
+
+                <div class="wg-box">
+                    <!-- Existing Images (on the right side) -->
+                    <fieldset class="existing-images">
+                        <div class="body-title mb-10">Existing Images</div>
+                        <div class="existing-images-container d-flex flex-wrap">
+                            <% product.productImage.forEach(img => { %>
+                                <div class="image-container">
+                                    <img src="<%= img %>" alt="Product Image" class="product-image">
+                                    <button type="button" class="btn-delete-image" data-id="<%= product._id %>" data-image="<%= img %>">Delete</button>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <input type="hidden" name="existingImages" value="<%= product.productImage %>">
+                    </fieldset>
+
+                    <!-- Add New Images -->
+                    <fieldset class="new-images">
+                        <div class="body-title mb-10">Add New Images</div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="file" id="productImage1" name="productImage1" onchange="handleFileChange(event, 1)">
+                                <img id="image1Preview" src="#" alt="Image Preview" style="display:none; max-width: 100%; height: auto;" />
+                            </div>
+                            <div class="col-md-4">
+                                <input type="file" id="productImage2" name="productImage2" onchange="handleFileChange(event, 2)">
+                                <img id="image2Preview" src="#" alt="Image Preview" style="display:none; max-width: 100%; height: auto;" />
+                            </div>
+                            <div class="col-md-4">
+                                <input type="file" id="productImage3" name="productImage3" onchange="handleFileChange(event, 3)">
+                                <img id="image3Preview" src="#" alt="Image Preview" style="display:none; max-width: 100%; height: auto;" />
+                            </div>
+                        </div>
+                        <div class="error-message" style="color: red;" id="error-images"></div>
+                    </fieldset>
+                </div>
+
+                <div class="cols gap10">
+                    <button class="tf-button w-full" type="submit">Update Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../layouts/admin/footer.ejs') -%>
+
+<!-- Include Cropper.js from a CDN or local file -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+
+<script>
+    let cropper1, cropper2, cropper3;
+
+    function handleFileChange(event, imageNumber) {
+        const imagePreview = document.getElementById('image' + imageNumber + 'Preview');
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                initCropper(imagePreview, imageNumber);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function initCropper(imageElement, imageNumber) {
+        if (imageNumber === 1 && cropper1) cropper1.destroy();
+        if (imageNumber === 2 && cropper2) cropper2.destroy();
+        if (imageNumber === 3 && cropper3) cropper3.destroy();
+
+        let cropperInstance = new Cropper(imageElement, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+            movable: true,
+            zoomable: true,
+            rotatable: true,
+            scalable: true,
+        });
+
+        if (imageNumber === 1) cropper1 = cropperInstance;
+        if (imageNumber === 2) cropper2 = cropperInstance;
+        if (imageNumber === 3) cropper3 = cropperInstance;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.btn-delete-image').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.getAttribute('data-id');
+                const image = this.getAttribute('data-image');
+
+                fetch('/admin/delete-image', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId, image })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.closest('.image-container').remove();
+                    } else {
+                        alert('Error deleting image');
+                    }
+                })
+                .catch(err => console.error('Error:', err));
+            });
+        });
+    });
+</script>

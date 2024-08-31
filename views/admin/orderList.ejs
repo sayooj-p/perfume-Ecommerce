@@ -1,0 +1,149 @@
+<%- include('../layouts/admin/header.ejs') -%>
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3>All Users</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Order</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">OrderList</li>
+                </ul>
+            </div>
+            <div class="card" style="border-radius: 10px;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <form class="form-search">
+                            <fieldset class="name">
+                                <input type="text" placeholder="Search here..." name="name" tabindex="2" value="" aria-required="true" required="">
+                            </fieldset>
+                            <div class="button-submit">
+                                <button type="submit"><i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table" style="border-collapse: collapse; border: 1px solid white; margin-top: 20px;">
+                            <thead>
+                                <tr style="border: none;">
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">OrderId</th>
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Date</th>
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">UserName</th>
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Status</th>
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Price</th>
+                                    <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                             
+                                <% orders.forEach(order => { %>
+                                    <tr class="table-row">
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= order.orderId %></td>
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= order.createdOn.toLocaleString()  %></td>
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= order.userId.name %></td>
+                                        <!-- Status Dropdown -->
+                                        <td style="text-align: center; vertical-align: middle; border:none">
+                                            <select class="form-select status-select" data-order-id="<%= order._id %>">
+                                            <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                            <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                            <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                            <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                            <option value="Return Request" <%= order.status === 'Return Request' ? 'selected' : '' %>>Return Request</option>
+                                            <option value="Returned" <%= order.status === 'Returned' ? 'selected' : '' %>>Returned</option>
+                                            </select>
+                                        </td>                                        
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= order.totalPrice %></td>
+                                        <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle;">
+                                            <div class="d-flex justify-content-center">
+                                                    <a href="/admin/viewOrder/<%= order._id%>" class="btn btn-info toggle-status"  style="width: 100px;">View</a>
+                                               
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>Showing <%= orders.length %> entries</div>
+                        <ul class="pagination mb-0">
+                            <% if (currentPage > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                                </li>
+                            <% } %>
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-page text-center mt-4">
+        <div class="body-text">Copyright © 2024 Remos. Design with <i class="icon-heart"></i> by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a>. All rights reserved.</div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.querySelectorAll('.status-select').forEach(selectElement => {
+    selectElement.addEventListener('change', async (event) => {
+      const orderId = event.target.getAttribute('data-order-id');
+      const newStatus = event.target.value;
+
+      const confirmResult = await Swal.fire({
+        title: 'Are you sure?',
+        text: `You are about to change the status to ${newStatus}.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, update it!',
+        cancelButtonText: 'No, keep it'
+      });
+
+      if (confirmResult.isConfirmed) {
+        try {
+          const response = await axios.post('/admin/updateOrderStatus', {
+            orderId: orderId,
+            status: newStatus
+          });
+
+          if (response.data.success) {
+            Swal.fire(
+              'Updated!',
+              `Order status has been updated to ${newStatus}.`,
+              'success'
+            );
+          } else {
+            Swal.fire(
+              'Failed!',
+              response.data.message,
+              'error'
+            );
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          Swal.fire(
+            'Error!',
+            'Failed to update the order status. Please try again.',
+            'error'
+          );
+        }
+      } else {
+        // Revert the status back if the user cancels the update
+        event.target.value = event.target.getAttribute('data-current-status');
+      }
+    });
+  });
+</script>
+<%- include('../layouts/admin/footer.ejs') -%>

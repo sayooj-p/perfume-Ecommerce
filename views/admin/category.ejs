@@ -1,0 +1,120 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+<div class="main-content">
+    <!-- main-content-wrap -->
+    <div class="main-content-inner">
+        <!-- main-content-wrap -->
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>All Categories</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li>
+                        <a href="index.html"><div class="text-tiny">Dashboard</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <a href="#"><div class="text-tiny">Category</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <div class="text-tiny">All Categories</div></li>
+                    </li>
+                </ul>
+            </div>
+            <!-- all-category -->
+            <div class="wg-box">
+                <div class="flex items-center justify-between gap10 flex-wrap">
+                    <div class="wg-filter flex-grow">
+                        <form class="form-search">
+                            <fieldset class="name">
+                                <input type="text" placeholder="Search here..." class="" name="name" tabindex="2" aria-required="true" required="">
+                            </fieldset>
+                            <div class="button-submit">
+                                <button class="" type="submit"><i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    <a class="tf-button style-1 w208" href="/admin/add-Category"><i class="icon-plus"></i>Add new</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table" style="border-collapse: collapse; border: 1px solid white; margin-top: 20px;">
+                        <thead>
+                            <tr style="border: none;">
+                                <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Category Name</th>
+                                <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <style>
+                                .list-category {
+                                    color: red;
+                                }
+                            </style>
+                            <% cat.forEach((category) => { %>
+                                <tr class="<%= category.isListed ? 'list-category' : '' %>">
+                                    <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= category.name %></td>
+                                    <td style="border: 1px solid white; text-align: center; padding: 0;  display: flex; justify-content: center; margin-top : 10px">
+                                        <a href="/admin/edit-category?id=<%= category._id %>" class="btn btn-primary" style="width: 75px; display: block; color: white; text-decoration: none; padding: 5px; ">Edit</a>
+                                        <% if (category.isListed) { %>
+                                            <a href="/admin/listCategory?id=<%= category._id %>" class="btn btn-success text-white " style="width: 75px; display: block; text-decoration: none; padding: 5px; margin-left: 15px;">Unlist</a>
+                                        <% } else { %>
+                                            <a href="/admin/unlistCategory?id=<%= category._id %>" class="btn btn-danger text-white toggle-status" style="width: 75px; display: block; text-decoration: none; padding: 5px;margin-left: 20px;">List</a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- pagination code -->
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col text-end">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-lg justify-content-end">
+                                    <% if (currentPage > 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= currentPage - 1 %>">&laquo; Previous</a>
+                                        </li>
+                                    <% } else { %>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">&laquo; Previous</span>
+                                        </li>
+                                    <% } %>
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <% if (i === currentPage) { %>
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link"><%= i %></span>
+                                            </li>
+                                        <% } else { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                            </li>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (currentPage < totalPages) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= currentPage + 1 %>">Next &raquo;</a>
+                                        </li>
+                                    <% } else { %>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Next &raquo;</span>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../layouts/admin/footer.ejs') -%>

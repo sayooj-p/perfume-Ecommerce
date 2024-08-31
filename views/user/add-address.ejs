@@ -1,0 +1,252 @@
+<%- include('../layouts/user/header.ejs') -%>
+
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">Add Address</h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/profile">Profile</a></li>
+                <li class="breadcrumb-item"><a href="/manage-address">Manage Address</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add Address</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar Sticky Menu -->
+                <div class="col-lg-2" style="background-color: #d9d7d7;">
+                    <div class="sidebar-sticky">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="/profile">
+                                    Personal Information
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    My Orders
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/manage-address">
+                                    Manage Address
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!-- End .col-lg-2 -->
+
+                <!-- Form -->
+                <div class="col-lg-8 offset-lg-1" style="right: 120px;">
+                    <form action="/add-address" method="post" id="addressForm">
+                        <div class="form-box">
+                            <!-- Name and Phone Row -->
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Name *</label>
+                                    <input type="text" class="form-control" name="name" id="name" placeholder="Enter name" required>
+                                    <span id="nameError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                
+                                <div class="col-sm-6">
+                                    <label>Phone *</label>
+                                    <input type="text" class="form-control" name="phone" id="phone" placeholder="10-digit mobile Number" required>
+                                    <span id="phoneError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                            </div><!-- End .row -->
+                
+                            <!-- Pincode and Locality Row -->
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Pincode/ZIP *</label>
+                                    <input type="text" class="form-control" name="pincode" id="pincode" placeholder="Enter pincode" required>
+                                    <span id="pincodeError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                
+                                <div class="col-sm-6">
+                                    <label>Locality *</label>
+                                    <input type="text" class="form-control" name="locality" id="locality" placeholder="Enter Locality" required>
+                                    <span id="localityError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                            </div><!-- End .row -->
+                
+                            <!-- City and State Row -->
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>City/District/Town *</label>
+                                    <input type="text" class="form-control" name="city" id="city" placeholder="Enter City/District" required>
+                                    <span id="cityError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                
+                                <div class="col-sm-6">
+                                    <label>State *</label>
+                                    <input type="text" class="form-control" name="state" id="state" placeholder="Enter State" required>
+                                    <span id="stateError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                            </div><!-- End .row -->
+                
+                            <!-- Alternative Phone and Landmark Row -->
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Alternative Phone (optional)</label>
+                                    <input type="text" class="form-control" name="alternative" id="alternative" placeholder="Enter alternative mobile">
+                                    <span id="alternativeError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                
+                                <div class="col-sm-6">
+                                    <label>Landmark (optional)</label>
+                                    <input type="text" class="form-control" name="landmark" id="landmark" placeholder="Enter Landmark">
+                                    <span id="landmarkError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                            </div><!-- End .row -->
+                
+                            <!-- Address Type Dropdown and Primary Address Checkbox Row -->
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Address Type</label>
+                                    <select class="form-control" name="addressType" id="addressType" required>
+                                        <option value="home">Home</option>
+                                        <option value="work">Work</option>
+                                    </select>
+                                    <span id="addressTypeError" class="error-message"></span>
+                                </div><!-- End .col-sm-6 -->
+                
+                                <div class="col-sm-6 d-flex align-items-center">
+                                    <div class="form-check" style="display: flex; align-items: center;">
+                                        <input type="checkbox" class="form-check-input" name="isActive" id="isActive" value="true" style="transform: scale(1.5);">
+                                        <label for="isactive" class="form-check-label" style="margin-left: 10px;">Select as primary</label>
+                                    </div><!-- End .form-check -->
+                                </div><!-- End .col-sm-6 -->
+                            </div><!-- End .row -->
+                
+                            <!-- Submit Button Row -->
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                   <a href="/manage-address"> <button type="submit" class="btn btn-primary mt-3">Submit</button></a>
+                                </div><!-- End .col-sm-12 -->
+                            </div><!-- End .row -->
+                        </div><!-- End .form-box -->
+                    </form>
+                </div><!-- End .col-lg-8 -->
+            </div><!-- End .row -->
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+<%- include('../layouts/user/footer.ejs') -%>
+
+<style>
+    .error-message {
+        color: red;
+        font-size: 0.9rem;
+        margin-top: 5px;
+        display: block;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation logic
+    const form = document.getElementById('addressForm');
+
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const pincodeInput = document.getElementById('pincode');
+    const localityInput = document.getElementById('locality');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const addressTypeSelect = document.getElementById('addressType');
+
+    const nameError = document.getElementById('nameError');
+    const phoneError = document.getElementById('phoneError');
+    const pincodeError = document.getElementById('pincodeError');
+    const localityError = document.getElementById('localityError');
+    const cityError = document.getElementById('cityError');
+    const stateError = document.getElementById('stateError');
+    const addressTypeError = document.getElementById('addressTypeError');
+
+    // Validation patterns
+    const namePattern = /^[a-zA-Z\s]+$/;
+    const phonePattern = /^[0-9]{10}$/;
+    const pincodePattern = /^[0-9]{6}$/;
+    const textPattern = /^[a-zA-Z0-9\s,.-]+$/;
+
+    // Validate Name
+    nameInput.addEventListener('input', function() {
+        if (!namePattern.test(nameInput.value)) {
+            nameError.textContent = 'Please enter a valid name.';
+        } else {
+            nameError.textContent = '';
+        }
+    });
+
+    // Validate Phone
+    phoneInput.addEventListener('input', function() {
+        if (!phonePattern.test(phoneInput.value)) {
+            phoneError.textContent = 'Please enter a valid 10-digit phone number.';
+        } else {
+            phoneError.textContent = '';
+        }
+    });
+
+    // Validate Pincode
+    pincodeInput.addEventListener('input', function() {
+        if (!pincodePattern.test(pincodeInput.value)) {
+            pincodeError.textContent = 'Please enter a valid 6-digit pincode.';
+        } else {
+            pincodeError.textContent = '';
+        }
+    });
+
+    // Validate Locality
+    localityInput.addEventListener('input', function() {
+        if (!textPattern.test(localityInput.value)) {
+            localityError.textContent = 'Please enter a valid locality.';
+        } else {
+            localityError.textContent = '';
+        }
+    });
+
+    // Validate City
+    cityInput.addEventListener('input', function() {
+        if (!textPattern.test(cityInput.value)) {
+            cityError.textContent = 'Please enter a valid city name.';
+        } else {
+            cityError.textContent = '';
+        }
+    });
+
+    // Validate State
+    stateInput.addEventListener('input', function() {
+        if (!textPattern.test(stateInput.value)) {
+            stateError.textContent = 'Please enter a valid state name.';
+        } else {
+            stateError.textContent = '';
+        }
+    });
+
+    // Validate Address Type
+    addressTypeSelect.addEventListener('change', function() {
+        if (addressTypeSelect.value === '') {
+            addressTypeError.textContent = 'Please select an address type.';
+        } else {
+            addressTypeError.textContent = '';
+        }
+    });
+
+    // Form submission validation
+    form.addEventListener('submit', function(event) {
+        if (nameError.textContent || phoneError.textContent || pincodeError.textContent || localityError.textContent || cityError.textContent || stateError.textContent || addressTypeError.textContent) {
+            event.preventDefault();
+            alert('Please correct the errors in the form.');
+        }
+    });
+});
+</script>

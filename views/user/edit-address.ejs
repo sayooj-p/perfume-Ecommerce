@@ -1,0 +1,122 @@
+<%- include('../layouts/user/header.ejs') -%>
+
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">Add Address</h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">profile</a></li>
+                <li class="breadcrumb-item"><a href="#">Manage Address</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add Address</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar Sticky Menu -->
+                <div class="col-lg-2" style="background-color: #d9d7d7;">
+                    <div class="sidebar-sticky">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="/profile">
+                                    Personal Information
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    My Orders
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/manage-address">
+                                    Manage Address
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!-- End .col-lg-2 -->
+
+                <!-- Form -->
+                <div class="col-lg-8 offset-lg-1" style="right: 120px;">
+                    <form action="/update-address/<%= address._id %>" method="post">
+                        <div class="form-box">
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label>Name *</label>
+                              <input type="text" class="form-control" name="name" id="name" placeholder="Enter name" required value="<%= address.name %>">
+                            </div>
+                            <div class="col-sm-6">
+                              <label>Phone *</label>
+                              <input type="text" class="form-control" name="phone" id="phone" placeholder="10-digit mobile Number" required value="<%= address.phone %>">
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label>Pincode/ZIP *</label>
+                              <input type="text" class="form-control" name="pincode" id="pincode" placeholder="Enter pincode" required value="<%= address.pincode %>">
+                            </div>
+                            <div class="col-sm-6">
+                              <label>Locality *</label>
+                              <input type="text" class="form-control" name="locality" id="locality" placeholder="Enter Locality" required value="<%= address.locality %>">
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label>City/District/Town *</label>
+                              <input type="text" class="form-control" name="city" id="city" placeholder="Enter City/District" required value="<%= address.city %>">
+                            </div>
+                            <div class="col-sm-6">
+                              <label>State *</label>
+                              <input type="text" class="form-control" name="state" id="state" placeholder="Enter State" required value="<%= address.state %>">
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label>Alternative Phone (optional)</label>
+                              <input type="text" class="form-control" name="alternative" id="alternative" placeholder="Enter alternative mobile" value="<%= address.altPhone %>">
+                            </div>
+                            <div class="col-sm-6">
+                              <label>Landmark (optional)</label>
+                              <input type="text" class="form-control" name="landmark" id="landmark" placeholder="Enter Landmark" value="<%= address.landmark %>">
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label>Address Type</label>
+                              <select class="form-control" name="addressType" id="addressType" required>
+                                <option value="home" <%= address.addressType === 'home' ? 'selected' : '' %>>Home</option>
+                                <option value="work" <%= address.addressType === 'work' ? 'selected' : '' %>>Work</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-6 d-flex align-items-center">
+                              <div class="form-check" style="display: flex; align-items: center;">
+                                <input type="checkbox" class="form-check-input" name="isActive" id="isActive" value="true" style="transform: scale(1.5);" <%= address.isActive ? 'checked' : '' %>>
+                                <label for="isactive" class="form-check-label" style="margin-left: 10px;">Select as primary</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-12 text-center">
+                              <button type="submit" class="btn btn-primary mt-3">Update</button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                      
+                </div><!-- End .col-lg-8 -->
+                
+                
+                
+            </div><!-- End .row -->
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+<%- include('../layouts/user/footer.ejs') -%>

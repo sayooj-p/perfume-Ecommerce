@@ -1,0 +1,283 @@
+<%- include('../layouts/user/header.ejs') -%>
+<style>
+    .btn-close-search {
+    font-size: 1.2rem;
+    color: #333;
+    cursor: pointer;
+}
+
+.btn-close-search:hover {
+    color: #f00;
+}
+
+</style>
+
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">Product List<span>Shop</span></h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Shop</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="toolbox">
+                        <div class="toolbox-right">
+                            <div class="toolbox-left">
+                                <form action="/shop" method="GET" id="search-form">
+                                    <div class="input d-flex position-relative" style="width: 280px;">
+                                        <input type="text" class="form-control" placeholder="Search products..." name="search" id="search-input" value="<%= searchQuery || '' %>" style="width: 100%; padding-right: 30px;">
+                                        
+                                        <!-- Close Button (Hidden initially) -->
+                                        <button type="button" class="btn-close-search" id="clear-search" style="display: none; position: absolute; right: 40px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer;">
+                                            <i class="icon-close"></i>
+                                        </button>
+                                        
+                                        <!-- Search Submit Button -->
+                                        <button type="submit" class="btn-search" style="height: 30px; width: 46px; border: 0.5px solid rgb(216, 208, 208); background-color: rgb(201, 159, 68);" id="search-submit">
+                                            <i class="icon-search"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    
+                                </form>
+                            </div><!-- End .toolbox-left -->
+                            <div class="toolbox-sort">
+                                <label for="sortby">Sort by:</label>
+                                <select name="sortby" id="sortby" onchange="applySortAndFilter(this.value)">
+                                    <option value="createdAt_desc" <%= sort === 'createdAt' && order === 'desc' ? 'selected' : '' %>>New Arrivals</option>
+                                    <option value="price_asc" <%= sort === 'price' && order === 'asc' ? 'selected' : '' %>>Price: low to high</option>
+                                    <option value="price_desc" <%= sort === 'price' && order === 'desc' ? 'selected' : '' %>>Price: high to low</option>
+                                    <option value="productName_asc" <%= sort === 'productName' && order === 'asc' ? 'selected' : '' %>>A - Z</option>
+                                    <option value="productName_desc" <%= sort === 'productName' && order === 'desc' ? 'selected' : '' %>>Z - A</option>
+                                </select>
+                                
+                            </div>
+                        </div><!-- End .toolbox-right -->
+                    </div><!-- End .toolbox -->
+
+                    <div class="products mb-3">
+                        <div class="row justify-content-center">
+                            <% products.forEach(product => { %>
+                                <% if (product.isBlocked === false) { %>
+                                    <div class="col-6 col-md-4 col-lg-4">
+                                        <div class="product product-7 text-center">
+                                            <figure class="product-media">
+                                                <a href="/productdetails/<%= product._id %>">
+                                                    <img src="<%= product.productImage[0] %>" alt="Product image" class="product-image">
+                                                </a>
+                                                <div class="product-action-vertical">
+                                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                                </div><!-- End .product-action-vertical -->
+                                                <div class="product-action">
+                                                    <% if (product.status === 'in Stock') { %>
+                                                        <% if (cartProductIds.includes(product._id.toString())) { %>
+                                                            <a href="/cart" class="btn-product btn-cart"><span>Go to Cart</span></a>
+                                                        <% } else { %>
+                                                            <a href="/cart" class="btn-product btn-cart add-to-cart" data-product-id="<%= product._id %>"><span>Add to Cart</span></a>
+                                                        <% } %>
+                                                    <% } else { %>
+                                                        <button class="btn-product btn-cart disabled" disabled><span>Out of Stock</span></button>
+                                                    <% } %>
+                                                </div><!-- End .product-action -->
+                                            </figure><!-- End .product-media -->
+
+                                            <div class="product-body">
+                                                <div class="product-cat">
+                                                    <a href="#"><%= product.category.name %></a>
+                                                </div><!-- End .product-cat -->
+                                                <h4 class="product-name font-weight-normal"><%= product.productName %></h4>
+                                                <div class="product-status">
+                                                    <% if (product.status === 'in Stock') { %>
+                                                        <h5 class="status" style="color: green;"><%= product.status %></h5>
+                                                    <% } else { %>
+                                                        <h5 class="status" style="color: red;"><%= product.status %></h5>
+                                                    <% } %>
+                                                </div><!-- End .product-status -->
+                                                <div class="product-price">
+                                                    <h4><b> ₹<%= product.price %></b></h4>
+                                                </div><!-- End .product-price -->
+                                                <div class="ratings-container">
+                                                    <div class="ratings">
+                                                        <div class="ratings-val" style="width: 20%;"></div><!-- End .ratings-val -->
+                                                    </div><!-- End .ratings -->
+                                                    <span class="ratings-text">( 2 Reviews )</span>
+                                                </div><!-- End .ratings-container -->
+                                            </div><!-- End .product-body -->
+                                        </div><!-- End .product -->
+                                    </div><!-- End .col-sm-6 col-lg-4 -->
+                                <% } %>
+                            <% }) %>
+                        </div><!-- End .row -->
+                    </div><!-- End .products -->
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <!-- Previous Page Link -->
+                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                <a class="page-link page-link-prev" href="?page=<%= currentPage - 1 %>&sort=<%= sort %>&order=<%= order %>&category=<%= categoryFilter %>&search=<%= searchQuery %>" aria-label="Previous">
+                                    <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                                </a>
+                            </li>
+                    
+                            <!-- Page Numbers -->
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>&sort=<%= sort %>&order=<%= order %>&category=<%= categoryFilter %>&search=<%= searchQuery %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                    
+                            <!-- Next Page Link -->
+                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                <a class="page-link page-link-next" href="?page=<%= currentPage + 1 %>&sort=<%= sort %>&order=<%= order %>&category=<%= categoryFilter %>&search=<%= searchQuery %>" aria-label="Next">
+                                    Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    
+                </div><!-- End .col-lg-9 -->
+
+                <aside class="col-lg-3 order-lg-first">
+                    <div class="sidebar sidebar-shop">
+                        <div class="widget widget-clean">
+                            <label>Filters:</label>
+                        </div><!-- End .widget-clean -->
+
+                        <div class="widget widget-collapsible">
+                            <h3 class="widget-title">
+                                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
+                                    Category
+                                </a>
+                            </h3><!-- End .widget-title -->
+                            <div class="collapse show" id="widget-1">
+                                <div class="widget-body">
+                                    <ul class="list-unstyled">
+                                        <li>
+                                            <a href="/shop?page=1&sort=<%= sort %>&order=<%= order %>&search=<%= searchQuery %>" class="<%= categoryFilter === '' ? 'active' : '' %>">All Categories</a>
+                                        </li>
+                                        <% categories.forEach(category => { %>
+                                            <li>
+                                                <a href="/shop?page=1&sort=<%= sort %>&order=<%= order %>&category=<%= category._id %>&search=<%= searchQuery %>" class="<%= categoryFilter === category._id ? 'active' : '' %>"><%= category.name %></a>
+                                            </li>
+                                        <% }) %>
+                                    </ul>
+                                </div><!-- End .widget-body -->
+                            </div><!-- End .collapse -->
+                        </div><!-- End .widget -->
+                    </div><!-- End .sidebar -->
+                </aside><!-- End .col-lg-3 -->
+            </div><!-- End .row -->
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+               function applySortAndFilter(sortValue) {
+    const [sort, order] = sortValue.split('_');
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('sort', sort);
+    currentUrl.searchParams.set('order', order);
+    currentUrl.searchParams.set('page', '1'); // Reset to first page when sorting
+    window.location.href = currentUrl.toString();
+}
+
+
+
+
+            // Category filtering logic (declare globally)
+            function applyCategory(categoryId) {
+                const currentUrl = new URL(window.location.href);
+                if (categoryId) {
+                    currentUrl.searchParams.set('category', categoryId);
+                } else {
+                    currentUrl.searchParams.delete('category');
+                }
+                currentUrl.searchParams.set('page', '1'); // Reset to first page when changing category
+                window.location.href = currentUrl.toString();
+            }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Search form submission with validation
+            const searchForm = document.getElementById('search-form');
+            searchForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const query = searchForm.querySelector('input[name="search"]').value;
+                if (query.length >= 3) {
+                    searchForm.submit();
+                } else {
+                    // alert('Please enter at least 3 characters.');
+                    Swal.fire({
+                icon: 'warning',
+                title: 'Please enter at least 3 characters.',
+                
+            });
+                }
+            });
+
+            // Add to cart functionality
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    axios.post('/cart/add', { productId })
+                        .then(response => {
+                            window.location.href = '/cart';
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search-input');
+    const clearSearchButton = document.getElementById('clear-search');
+
+    // Show/Hide the close button based on the input's value
+    searchInput.addEventListener('input', function () {
+        if (searchInput.value.length > 0) {
+            clearSearchButton.style.display = 'block';
+        } else {
+            clearSearchButton.style.display = 'none';
+        }
+    });
+
+    // Clear the search input and hide the close button when clicked
+    clearSearchButton.addEventListener('click', function () {
+        searchInput.value = '';
+        clearSearchButton.style.display = 'none';  // Hide the close button
+
+        // Reload the page or reset the search (optional)
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.delete('search');  // Remove the search query parameter from the URL
+        window.location.href = currentUrl.toString();  // Reload the page
+    });
+
+    // Search form submission with validation
+    const searchForm = document.getElementById('search-form');
+    searchForm.addEventListener('submit', function (e) {
+        const query = searchInput.value;
+        if (query.length < 3) {
+            e.preventDefault();
+           
+        }
+    });
+});
+
+    </script>
+</main><!-- End .main -->
+
+<%- include('../layouts/user/footer.ejs') -%>

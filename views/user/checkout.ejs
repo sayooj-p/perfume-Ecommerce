@@ -1,0 +1,248 @@
+<%- include('../layouts/user/header.ejs') -%>
+
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">Checkout</h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/cart">Cart</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="checkout">
+            <div class="container">
+                <div class="checkout-discount">
+                    <form action="#">
+                        <input type="text" class="form-control" required id="checkout-discount-input">
+                        <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
+                    </form>
+                </div><!-- End .checkout-discount -->
+                <form id="checkout-form" action="/order-success" method="POST">
+                    <input type="hidden" name="cartId" value="<%= cartId %>">
+                    <div class="row">
+                        <!-- Left Column: Manage Addresses -->
+                        <div class="col-lg-9" style="border: 0.5px solid #c7c0c0;">
+                            <h1 class="checkout-title text-center">Billing Details</h1>
+                            <div class="card-body" style="width: 100%; margin-bottom: 70px;">
+                                <h2 class="card-title" style="margin-top: 20px; margin-left: 20px;">Delivery Address</h2>
+                
+                                <div>
+                                    <a href="/add-address"><button type="button" class="btn btn-primary btn-lg" style="width: 25%; margin-top: 25px;">Add New Address</button></a>
+                                </div>
+                
+                                <!-- Displaying Addresses -->
+                                <% addresses.forEach(function(address) { %>
+                                    <div class="address-main <%= address.isActive ? 'active-address' : '' %>" style="border: 1px solid #cdc9c9; width: 890px; margin-top: 35px; padding: 15px; position: relative;">
+                                        <!-- Address Type and 3-Dot Menu -->
+                                        <div class="row">
+                                            <div class="col-12 d-flex justify-content-between align-items-center">
+                                                <!-- Type Div -->
+                                                <div style="padding: 3px 8px; color: black; border-radius: 5px; font-size: 14px; background-color: rgb(228, 228, 228); font-weight: bolder;">
+                                                    <span class=""><%= address.addressType || "No Type Provided" %></span><span class="text-success fw-bolder"><%= address.isActive ? '(Primary)' :'' %></span>
+                                                </div>
+                
+                                                <!-- Edit/Delete Options (3-Dot Dropdown) -->
+                                                <div class="dropdown" style="background-color: transparent; padding: 5px; border-radius: 5px;">
+                                                    <div class="dropdown-content">
+                                                        <a href="/edit-address/<%= address._id %>" style="font-size: 15px;">Edit</a>
+                                                        <label class="radio-label">
+                                                            <input type="radio" class="custom-radio" name="addressId" value="<%= address._id %>" <%= address.isActive ? 'checked' : '' %> >
+                                                        </label>
+
+                                                    </div>
+                                                </div> <!-- end dropdown -->
+                                            </div>
+                                        </div>
+                
+                                        <!-- Name and Phone Row -->
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <strong>Name: </strong><%= address.name %>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Phone: </strong><%= address.phone %>
+                                            </div>
+                                        </div>
+                                        <!-- Locality, Landmark, City, and State Row -->
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <strong>Locality: </strong><%= address.locality %>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Landmark: </strong><%= address.landmark %>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <strong>City: </strong><%= address.city %>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>State: </strong><%= address.state %>
+                                            </div>
+                                        </div>
+                                        <!-- Pincode Row -->
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <strong>Pincode: </strong><%= address.pincode %>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end address-main -->
+                                <% }); %>
+                            </div>
+                        </div><!-- End .col-lg-9 -->
+                
+                        <!-- Right Column: Order Summary -->
+                        <aside class="col-lg-3">
+                            <div class="summary">
+                                <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+                
+                                <table class="table table-summary">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Qty</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cart-summary-body">
+                                        <% cartItems.forEach(item => { %>
+                                        <tr>
+                                            <td><%= item.productId.productName %></td>
+                                            <td id="summary-qty-<%= item.productId._id %>">
+                                                <%= item.quantity %>
+                                            </td>
+                                            <td class="summary-total-col" id="summary-subtotal-<%= item.productId._id %>">
+                                                ₹<%= item.totalPrice %>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                        <tr>
+                                            <td>Delivery Charge:</td>
+                                            <td></td>
+                                            <td>Free</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Coupon applied:</td>
+                                            <td></td>
+                                            <td>0</td>
+                                        </tr>
+                                        <tr class="summary-total">
+                                            <td>Total:</td>
+                                            <td></td>
+                                            <td id="grand-total">₹<%= total %></td>
+                                        </tr>
+                                        <!-- End .summary-total -->
+                                    </tbody>
+                                </table>
+                                <!-- End .table table-summary -->
+                
+                                <div class="accordion-summary" id="accordion-payment">
+                                    <div class="card mt-2">
+                                        <h5>Payment Methods</h5>
+                                    </div>
+                                    <div class="cart-main ml-3">
+                                        <div class="card">
+                                            <div class="card-header d-flex mt-1" id="heading-2">
+                                                <input type="radio" class="radio-btn" name="paymentMethod" value="online-payment">
+                                                <h2 class="card-title ml-2"> Online payment</h2>
+                                            </div><!-- End .card-header -->
+                                        </div><!-- End .card -->
+                
+                                        <div class="card">
+                                            <div class="card-header d-flex mt-1" id="heading-3">
+                                                <input type="radio" class="radio-btn" name="paymentMethod" value="cash-on-delivery">
+                                                <h2 class="card-title ml-2"> Cash on delivery</h2>
+                                            </div><!-- End .card-header -->
+                                        </div><!-- End .card -->
+                
+                                        <div class="card">
+                                            <div class="card-header d-flex mt-1" id="heading-4">
+                                                <input type="radio" class="radio-btn" name="paymentMethod" value="wallet">
+                                                <h2 class="card-title ml-2"> Wallet</h2>
+                                            </div><!-- End .card-header -->
+                                        </div><!-- End .card -->
+                                    </div><!-- End .cart-main -->
+                
+                                    <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block mt-2">
+                                        <span class="btn-text">Place Order</span>
+                                        <span class="btn-hover-text">Proceed to Checkout</span>
+                                    </button>
+                                </div><!-- End .accordion -->
+                            </div><!-- End .summary -->
+                        </aside><!-- End .col-lg-3 -->
+                    </div><!-- End .row -->
+                </form>
+                
+            </div><!-- End .container -->
+        </div><!-- End .checkout -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+<style>
+    .dropdown-content {
+        display: flex;
+    }
+    
+    .edit-content {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        text-decoration: none;
+        color: #e09e41;
+        font-size: 15px;
+    }
+
+    .radio-label {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    .custom-radio {
+        width: 20px; /* Adjust size here */
+        height: 20px; /* Adjust size here */
+        margin-left: 10px; /* Space between text and radio button */
+        cursor: pointer;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+        const addressSelected = document.querySelector('input[name="addressId"]:checked');
+        const paymentMethodSelected = document.querySelector('input[name="paymentMethod"]:checked');
+
+        // Check if no address is selected
+        if (!addressSelected) {
+            event.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Address Selected',
+                text: 'Please select a delivery address before placing your order.',
+            });
+            return;
+        }
+
+        // Check if no payment method is selected
+        if (!paymentMethodSelected) {
+            event.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Payment Method Selected',
+                text: 'Please select a payment method before placing your order.',
+            });
+        }
+    });
+</script>
+
+<%- include('../layouts/user/footer.ejs') -%>
