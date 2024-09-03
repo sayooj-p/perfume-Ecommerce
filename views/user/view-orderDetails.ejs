@@ -1,5 +1,8 @@
 <%- include('../layouts/user/header.ejs') -%>
 <style>
+  .order-items-table {
+    min-height: 631px;
+  }
   .order-items-table, .summary-table {
   background-color: #f8f9fa;
   padding: 20px;
@@ -63,12 +66,13 @@
         <!-- Left Column: Order Items Details -->
         <div class="col-lg-7">
           <div class="order-items mb-5">
-            <div class="order-items-table">            <h4 class="text-muted mb-4">Products in this Order</h4>
+            <div class="order-items-table">           
+               <h4 class="text-muted mb-4">Products in this Order</h4>
 
               <% order.orderItems.forEach(item => { %>
               <div class="order-item d-flex align-items-center mb-4" style="border-bottom: 1px solid #e6e6e6; padding-bottom: 15px;">
-                <div class="product-image" style="width: 80px; margin-right: 20px;">
-                  <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.name %>" style="width: 100%;">
+                <div class="product-image" style="width: 80px; margin-right: 20px; height: 135px;">
+                  <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.name %>" style="width: 100%; margin-top: 34px;">
                 </div>
                 <div class="item-details" style="flex-grow: 1;">
                 
@@ -83,7 +87,7 @@
               <% }); %>
             </div>
             <!-- Cancel Order Button -->
-            <div class="order-action mt-4">
+            <div class="order-action mt-4 d-flex justify-content-end">
               <% if (order.status === 'Cancelled') { %>
                <h3 class="text-danger">Order has been cancelled</h3>
               <% }else{ %>
@@ -93,7 +97,23 @@
           </div>
 
           <!-- Order Summary -->
-          <div class="order-summary mb-5">
+        
+        </div>
+
+        <!-- Right Column: Shipping Address -->
+        <div class="col-lg-5">
+          <div class="shipping-address mb-5">
+            <h4 class="text-muted mb-4">Shipping Address</h4>
+            <div class="summary-table">
+            <p><strong>Name:</strong> <%= order.address.name %></p>
+            <p><strong>Address:</strong> <%= order.address.locality %>, <%= order.address.landmark %></p>
+            <p><strong>City:</strong> <%= order.address.city %>, <%= order.address.state %></p>
+            <p><strong>Pincode:</strong> <%= order.address.pincode %></p>
+            <p><strong>Phone:</strong> <%= order.address.phone %></p>
+            <p><strong>Alternate Phone:</strong> <%= order.address.altPhone %></p>
+            </div>
+          </div>
+          <div class="order-summary mb-3">
             <h4 class="text-muted mb-4">Order Summary</h4>
             <div class="summary-table">
               <p><strong>Subtotal:</strong> ₹<%= order.orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0) %></p>
@@ -103,19 +123,7 @@
               <p><strong>Order Date:</strong> <%= new Date(order.createdOn).toLocaleDateString() %></p>
             </div>
           </div>
-        </div>
 
-        <!-- Right Column: Shipping Address -->
-        <div class="col-lg-5">
-          <div class="shipping-address mb-5">
-            <h4 class="text-muted mb-4">Shipping Address</h4>
-            <p><strong>Name:</strong> <%= order.address.name %></p>
-            <p><strong>Address:</strong> <%= order.address.locality %>, <%= order.address.landmark %></p>
-            <p><strong>City:</strong> <%= order.address.city %>, <%= order.address.state %></p>
-            <p><strong>Pincode:</strong> <%= order.address.pincode %></p>
-            <p><strong>Phone:</strong> <%= order.address.phone %></p>
-            <p><strong>Alternate Phone:</strong> <%= order.address.altPhone %></p>
-          </div>
         </div>
 
       </div>
@@ -164,6 +172,6 @@
                     }
                 }
             }
-        </script>
+      </script>
 
 <%- include('../layouts/user/footer.ejs') -%>

@@ -1,5 +1,29 @@
 
 <%- include('../layouts/user/header.ejs') -%>
+<style>
+    .password-container {
+    position: relative;
+    width: 100%;
+}
+
+#signin-password {
+    padding-right: 30px; 
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #aaa;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
+</style>
 <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
     <div class="container">
         <ol class="breadcrumb">
@@ -39,9 +63,15 @@
                             </div><!-- End .form-group -->
 
                             <div class="form-group">
-                                <label for="singin-password-2">Password *</label>
-                                <input type="password" class="form-control rounded" id="singin-password" name="password" value="Sayooj@123" required>
+                                <label for="signin-password">Password *</label>
+                                <div class="password-container">
+                                    <input type="password" class="form-control rounded" id="signin-password" name="password" value="Sayooj@123" required>
+                                    <span id="togglePassword" class="toggle-password">
+                                        <i class="fas fa-eye"></i>
+                                    </span>
+                                </div>
                             </div><!-- End .form-group -->
+                            
 
                             <div class="form-footer">
                                 <button type="submit" class="btn btn-outline-primary-2 mt-3 w-50 ml-4 rounded">
@@ -49,7 +79,7 @@
                                     <i class="icon-long-arrow-right"></i>
                                 </button>
 
-                                  <a href="/signup" class="forgot-link mt-3 ml-3">Create an Cccount?</a>
+                                  <a href="/signup" class="forgot-link mt-3 ml-3">Create an Account?</a>
                             </div><!-- End .form-footer -->
                         </form>
                         <div class="form-choice">
@@ -74,6 +104,27 @@
     </div><!-- End .container -->
 </div><!-- End .login-page section-bg -->
 </main><!-- End .main -->
+<script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#signin-password');
+
+    togglePassword.addEventListener('click', function () {
+        // Toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+
+        // Toggle the icon
+        const icon = this.querySelector('i');
+        if (type === 'password') {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+</script>
+
 
 
 

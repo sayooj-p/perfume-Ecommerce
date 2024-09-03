@@ -26,14 +26,18 @@
                   <h6>Items:</h6>
                   <% order.orderItems.forEach(item => { %>
                     <div class="order-item mb-2 d-flex">
-                      <div class="product-image" style="width: 60px; margin-right: 15px;">
-                        <img src="<%= item.product.imageURL %>" alt="<%= item.product.name %>" style="width: 100%; border-radius: 5px;">
-                      </div>
-                      <div>
-                        <h6 class="mb-1"><%= item.product.name %></h6>
-                        <p class="mb-0">Quantity: <%= item.quantity %></p>
-                        <p class="mb-0">Price: ₹<%= item.price %></p>
-                      </div>
+                      <% if (item.product) { %>
+                        <div class="product-image" style="width: 60px; margin-right: 15px;">
+                          <img src="<%= item.product.productImage %>" alt="<%= item.product.name %>" style="width: 100%; border-radius: 5px;">
+                        </div>
+                        <div>
+                          <h6 class="mb-1"><%= item.product.name %></h6>
+                          <p class="mb-0">Quantity: <%= item.quantity %></p>
+                          <p class="mb-0">Price: ₹<%= item.price %></p>
+                        </div>
+                      <% } else { %>
+                        <p class="text-danger">This product is no longer available.</p>
+                      <% } %>
                     </div>
                   <% }) %>
 
@@ -45,7 +49,7 @@
                 <div class="card-footer text-center">
                   <a href="/view-orderDetails/<%= order._id %>" class="btn btn-info">View Details</a>
                   <% if (order.status === 'Pending' || order.status === 'Processing') { %>
-                    <button class="btn btn-danger btn-cancel-order mt-2" onclick="cancelOrder('<%= order._id%>')">Cancel Order</button>
+                    <button class="btn btn-danger btn-cancel-order mt-2" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
                   <% } %>
                 </div>
               </div>
@@ -64,48 +68,47 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            async function cancelOrder(orderId) {
-                const confirmResult = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, cancel it!',
-                    cancelButtonText: 'No, keep it'
-                });
-        
-                if (confirmResult.isConfirmed) {
-                    try {
-                        const response = await axios.post('/cancelOrder', { orderId });
-        
-                        if (response.data.success) {
-                            Swal.fire(
-                                'Cancelled!',
-                                response.data.message,
-                                'success'
-                            ).then(() => {
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire(
-                                'Failed!',
-                                response.data.message,
-                                'error'
-                            );
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        Swal.fire(
-                            'Error!',
-                            'Failed to cancel the order. Please try again.',
-                            'error'
-                        );
-                    }
-                }
-            }
-        </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  async function cancelOrder(orderId) {
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it!',
+      cancelButtonText: 'No, keep it'
+    });
 
+    if (confirmResult.isConfirmed) {
+      try {
+        const response = await axios.post('/cancelOrder', { orderId });
+
+        if (response.data.success) {
+          Swal.fire(
+            'Cancelled!',
+            response.data.message,
+            'success'
+          ).then(() => {
+            window.location.reload();
+          });
+        } else {
+          Swal.fire(
+            'Failed!',
+            response.data.message,
+            'error'
+          );
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        Swal.fire(
+          'Error!',
+          'Failed to cancel the order. Please try again.',
+          'error'
+        );
+      }
+    }
+  }
+</script>
 
 <%- include('../layouts/user/footer.ejs') -%>

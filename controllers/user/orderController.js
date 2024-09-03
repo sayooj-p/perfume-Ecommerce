@@ -111,7 +111,7 @@ const getOrderDetails = async (req, res) => {
 
     const order = await Order.findById(orderId).populate('orderItems.product').populate('address');
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.redirect('/pageNotFound');
     }
 
     // Assuming you want to render a page for order details
@@ -142,7 +142,7 @@ const viewOrderDetails = async (req, res) => {
 
     // Check if the order exists
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res.redirect('/pageNotFound');
     }
 
     // Render the order details page
@@ -194,16 +194,18 @@ const cancelOrder = async (req, res) => {
 const myOrder = async (req, res) => {
   try {
     const userId = req.session.user._id;
+    // Populate the `product` field in `orderItems`
     const orders = await Order.find({ userId }).populate('orderItems.product');
     
     res.render('myOrder', {
       orders
     });
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    console.error('Error fetching orders:', error);
     res.status(500).json({ message: "Failed to retrieve orders." });
   }
 };
+
 
 
 

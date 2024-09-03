@@ -30,17 +30,24 @@
         <div class="row">
           <div class="col-lg-9">
             <% if (cartItems.length === 0) { %>
-              <div class="cart-empty">
-                <p
+              <div class="cart-empty" style="
+              align-items: center;     
+              min-height: 350px; ">
+              <img src="" alt="">
+                <h3
                   class="para-cart text-center mb-3"
                   style="
-                    font-size: medium;
+                   
                     font-weight: bolder;
                     color: rgb(227, 104, 100);
+                    /* margin-left: 460px; */
+                    text-align: center;
+                    margin-left: 425px;
+                    padding: 1 rem;
                   "
                 >
-                  Cart is Empty
-                </p>
+                 Your Cart is Currently Empty
+                </h3>
               </div>
               <% } else { %>
 

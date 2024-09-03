@@ -250,7 +250,6 @@ const loadProductDetails = async (req, res) => {
       _id: { $ne: productId },
       category: product.category._id,
       isBlocked: false,
-      // Additional filters if needed, e.g., {isListed: true} or any other field
     });
 
     let cartProductIds = [];
@@ -282,6 +281,7 @@ const loadProductDetails = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
 
 const profileDetails = async (req, res) => {
   try {

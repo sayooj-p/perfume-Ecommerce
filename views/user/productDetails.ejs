@@ -49,31 +49,45 @@
                             <div class="product-price">
                                 Rs: <%= product.price %>
                             </div>
+                            
+                            <!-- Check if the product is in stock -->
                             <div class="product-status">
-                                <% if (product.status === 'in Stock') { %>
+                                <% if (product.quantity > 0) { %>
                                     <h5 class="status" style="color: green;">In Stock</h5>
                                 <% } else { %>
-                                    <h5 class="status" style="color: red;"><%= product.status %></h5>
+                                    <h5 class="status" style="color: red;">Out of Stock</h5>
                                 <% } %>
                             </div>
-                            <div class="product-stock">
-                                <p class="p-stock"> (<%= product.quantity %> stocks only left)</p>
 
+                            <!-- Stock availability -->
+                            <div class="product-stock">
+                                <% if (product.quantity > 0) { %>
+                                    <p class="p-stock"> (<%= product.quantity %> left in stock)</p>
+                                <% } else { %>
+                                    <p class="p-stock" style="color: red;"> (Out of Stock)</p>
+                                <% } %>
                             </div>
+
                             <div class="product-content">
                                 <p><%= product.description %></p>
                             </div>
+
+                            <!-- Button logic for add to cart / go to cart -->
                             <div class="product-details-action">
-                                <% if (product.status === 'in Stock') { %>
-                                    <button class="btn-cart" onclick="addToCart('<%= product._id %>')"><span>Add to Cart</span></button>
+                                <% if (product.quantity > 0) { %>
+                                    <% if (cartProductIds.includes(product._id.toString())) { %>
+                                        <!-- If product is in the cart, show "Go to Cart" button -->
+                                        <a href="/cart" class="btn btn-primary"><span>Go to Cart</span></a>
+                                    <% } else { %>
+                                        <!-- If product is not in the cart, show "Add to Cart" button -->
+                                        <button class="btn btn-primary" onclick="addToCart('<%= product._id %>')"><span>Add to Cart</span></button>
+                                    <% } %>
                                 <% } else { %>
-                                    <button class="btn-cart disabled" disabled style="background-color: grey; cursor: not-allowed;"><span>Out of Stock</span></button>
+                                    <!-- Product is out of stock -->
+                                    <button class="btn btn-secondary disabled" disabled style="background-color: grey; cursor: not-allowed;"><span>Out of Stock</span></button>
                                 <% } %>
-                                <div class="details-action-wrapper">
-                                    <a href="#" class="btn-product btn-wishlist"><span>Add to Wishlist</span></a>
-                                </div>
                             </div>
-                            
+
                             <div class="product-details-footer">
                                 <div class="product-cat">
                                     <span>Category:</span>
@@ -125,10 +139,10 @@
                     </div>
                 <% }) %>
             </div>
-            
         </div>
     </div>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     function addToCart(productId, quantity = 1) {
@@ -143,7 +157,19 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Item added to cart');
+                Swal.fire({
+                    
+                    text: "Product will add to Cart",
+                    icon: 'success',
+                    timer:1000
+                    
+                    }).then(()=>{
+                        window.location.reload();
+                    }
+
+                    )
+               
+               
             } else {
                 alert('Failed to add item to cart');
             }

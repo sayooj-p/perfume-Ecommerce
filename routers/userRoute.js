@@ -82,7 +82,7 @@ user_route.post('/update-address/:addressId', userAuth, checkoutController.updat
 
 user_route.get('/shop',shopController.getShop);
 // user_route.post('/shop',userAuth,shopController.getShop);
-
+  
 
 //order Managment
 

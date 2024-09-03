@@ -93,17 +93,20 @@ const getEditProduct = async (req, res) => {
 
 // Function to handle editing a product
 const updateProduct = async (req, res) => {
-    // console.log(req.body);
-    
     try {
         const productId = req.params.id;
+
+        // Split existing images string into an array
+        const existingImages = req.body.existingImages ? req.body.existingImages.split(',').map(img => img.trim()) : [];
+
         const updateProductData = {
             productName: req.body.productName,
             description: req.body.description,
             price: req.body.price,
             quantity: req.body.quantity,
             category: req.body.category,
-            status: req.body.status
+            status: req.body.status,
+            productImage: existingImages // Initialize with existing images
         };
 
         // Handle new images upload
@@ -112,11 +115,8 @@ const updateProduct = async (req, res) => {
                 return "/productImages/" + file.filename;
             });
 
-            const existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [];
-
+            // Combine existing and new images
             updateProductData.productImage = [...existingImages, ...newImages];
-        } else {
-            updateProductData.productImage = req.body.existingImages;
         }
 
         await Product.findByIdAndUpdate(productId, updateProductData, { new: true });
@@ -126,6 +126,7 @@ const updateProduct = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 // Function to list a product
 const listProduct = async (req, res) => {

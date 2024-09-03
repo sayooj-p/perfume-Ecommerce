@@ -277,7 +277,37 @@
     });
 });
 
+
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', function(event) {
+
+        event.preventDefault();
+        const productId = this.getAttribute('data-product-id');
+        axios.post('/cart', { productId })
+          .then(response => {
+            if (response.data.success) {
+
+              this.textContent = 'Go to Cart';
+              this.setAttribute('href', '/cart');
+              this.classList.remove('add-to-cart');
+
+              this.removeEventListener('click', arguments.callee);
+          this.addEventListener('click', function() {
+            window.location.href = '/cart';
+          });
+            }
+          })
+          .catch(error => {
+            console.error('Error adding to cart:', error);
+          });
+      });
+    });
+  </script>
 </main><!-- End .main -->
 
 <%- include('../layouts/user/footer.ejs') -%>
