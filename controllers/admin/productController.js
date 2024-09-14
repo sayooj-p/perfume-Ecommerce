@@ -2,6 +2,7 @@ const Product = require('../../models/productModel');
 const Category = require('../../models/categoryModel');
 const fs = require('fs');
 const path = require('path');
+const { findOne } = require('../../models/userModel');
 
 // Function to load the Add Product page
 const loadAddProduct = async (req, res) => {
@@ -17,7 +18,7 @@ const loadAddProduct = async (req, res) => {
 // Function to add a new product
 const addProduct = async (req, res) => {
     try {
-        const { productName, description, category, price, quantity, status } = req.body;
+        const { productName, description, category, price, quantity, status,regularPrice } = req.body;
 
         if (!req.files.productImage1 || !req.files.productImage2 || !req.files.productImage3) {
             return res.status(400).send('All three images are required');
@@ -29,6 +30,7 @@ const addProduct = async (req, res) => {
             category,
             price,
             quantity,
+            regularPrice,
             productImage: [
                 "/productImages/" + req.files.productImage1[0].filename,
                 "/productImages/" + req.files.productImage2[0].filename,
@@ -36,8 +38,11 @@ const addProduct = async (req, res) => {
             ],
             status
         });
+        
 
         await product.save();
+       
+        
         res.redirect('/admin/products');
         
     } catch (error) {
@@ -105,7 +110,7 @@ const updateProduct = async (req, res) => {
             price: req.body.price,
             quantity: req.body.quantity,
             category: req.body.category,
-            status: req.body.status,
+            regularPrice: req.body.regprice,
             productImage: existingImages // Initialize with existing images
         };
 
@@ -172,6 +177,62 @@ const deleteImage = async (req, res) => {
         res.status(500).json({ success: false });
     }
 };
+const addProductOffer = async (req, res) => {
+    try {
+        const { productId, percentage } = req.body;
+
+        // Find the product by its ID
+        const findProduct = await Product.findOne({ _id: productId }); // Fix: Corrected syntax for findOne
+
+        if (!findProduct) {
+            return res.json({ status: false, message: 'Product not found' });
+        }
+
+        const findCategory = await Category.findOne({ _id: findProduct.category });
+        
+        // Ensure the category offer is not higher than the percentage
+        if (findCategory && findCategory.categoryOffer > percentage) {
+            return res.json({ status: false, message: 'This product\'s category already has a better offer' });
+        }
+
+        // Update the price with the offer percentage
+        findProduct.price = findProduct.regularPrice - Math.floor(findProduct.regularPrice * (percentage / 100));
+        findProduct.productOffer = percentage; // Update the product's offer percentage
+        await findProduct.save();
+
+        return res.json({ status: true, message: 'Offer added successfully' });
+        
+    } catch (error) {
+        console.log('Error adding product offer:', error);
+        res.status(500).send('Internal server error');
+    }
+};
+
+const removeProductOffer = async (req, res) => {
+    try {
+        const { productId } = req.body;
+
+        // Find the product by its ID
+        const findProduct = await Product.findOne({ _id: productId });
+        if (!findProduct) {
+            return res.json({ status: false, message: 'Product not found' });
+        }
+
+        const percentage = findProduct.productOffer;
+
+        // Restore the price by removing the offer
+        findProduct.price = findProduct.regularPrice; // Set price back to original
+        findProduct.productOffer = 0; // Reset offer to 0
+        await findProduct.save();
+
+        return res.json({ status: true, message: 'Offer removed successfully' });
+        
+    } catch (error) {
+        console.log('Error removing product offer:', error);
+        res.status(500).send('Internal server error');
+    }
+};
+
 
 module.exports = {
     loadAddProduct,
@@ -181,5 +242,7 @@ module.exports = {
     updateProduct,
     listProduct,
     unlistProduct,
-    deleteImage
+    deleteImage,
+    addProductOffer,
+    removeProductOffer
 };

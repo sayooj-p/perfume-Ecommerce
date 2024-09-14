@@ -28,7 +28,7 @@
     <div class="container">
       <div class="cart">
         <div class="row">
-          <div class="col-lg-9">
+          <div class="cart-product col-lg-9" style="border: 1px solid rgb(254, 254, 254); border-radius: 10px;  box-shadow: 3px 4px 5px #b9bdbe">
             <% if (cartItems.length === 0) { %>
               <div class="cart-empty" style="
               align-items: center;     
@@ -40,7 +40,7 @@
                    
                     font-weight: bolder;
                     color: rgb(227, 104, 100);
-                    /* margin-left: 460px; */
+                   
                     text-align: center;
                     margin-left: 425px;
                     padding: 1 rem;
@@ -48,6 +48,21 @@
                 >
                  Your Cart is Currently Empty
                 </h3>
+                <div class="order-now " style="display: flex; justify-content: center;" >
+                  <img src= 'assets/images/empty-cart.webp' alt="order-now" style="padding-left: 350px;">
+                  </div>
+                <div
+                class="shop-btn"
+                style="
+                  display: flex;
+                  justify-content: center;
+                  padding: 29px 0px 8px 400px;">
+                
+              
+                <a href="/shop"
+                  ><button class="btn btn-primary">Go to Shop Page</button></a>
+              </div>
+              
               </div>
               <% } else { %>
 
@@ -75,7 +90,7 @@
                         </a>
                       </figure>
                       <h3 class="product-title">
-                        <a href="#"><%= item.productId.productName %> (<%= item.productId.quantity %>)</a>
+                        <a href="#"><%= item.productId.productName %></a>
                       </h3>
                     </div>
                   </td>
@@ -137,7 +152,7 @@
           <% if (cartItems.length !== 0) { %>
 
           <aside class="col-lg-3">
-            <div class="summary summary-cart">
+            <div class="summary summary-cart" style="border: 1px solid rgb(254, 254, 254); border-radius: 10px;  box-shadow:3px 4px 3px #b9bdbe;">
               <h3 class="summary-title">Cart Total</h3>
               <!-- End .summary-title -->
 

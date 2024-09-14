@@ -1,0 +1,138 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+<div class="main-content">
+    <!-- main-content-wrap -->
+    <div class="main-content-inner">
+        <!-- main-content-wrap -->
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>All Categories</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li>
+                        <a href="index.html"><div class="text-tiny">Dashboard</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <a href="#"><div class="text-tiny">Coupon</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <div class="text-tiny">All Coupon</div></li>
+                    </li>
+                </ul>
+            </div>
+            <!-- all-category -->
+            <div class="wg-box">
+                <div class="flex items-center justify-between gap10 flex-wrap">
+                    <div class="wg-filter flex-grow">
+                        <form class="form-search" method="get" action="/admin/couponList">
+                            <fieldset class="name">
+                                <input type="text" placeholder="Search here..." name="search" value="<%= search %>" tabindex="2" aria-required="true" required>
+                            </fieldset>
+                            <div class="button-submit">
+                                <button type="submit"><i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                    <a class="tf-button style-1 w208" href="/admin/add-coupon"><i class="icon-plus"></i>Add new</a>
+                </div>
+                <div class="error-msg text-danger"><%= errorMessage %></div>
+                <div class="table-responsive">
+                    <table class="table" style="border-collapse: collapse; border: 1px solid white; margin-top: 20px;">
+                        <thead>
+                            <tr style="border: none;">
+                                <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Coupon Name</th>
+                                <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">minimum Price</th>
+                                <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Offer Price</th>
+                                <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Expire Date</th>
+                                <th style="border: 1px solid white; padding: 8px; text-align: center; background-color: #f8f9fa;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <style>
+                                .list-coupon {
+                                    color: red;
+                                }
+                            </style>
+                            <% coupon.forEach((coupon) => { %>
+                                <tr class="<%= coupon.isListed ? '' : 'list-coupon' %>">
+                                    <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= coupon.name %></td>
+                                    <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= coupon.minimumPrice %></td>
+                                    <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= coupon.offerPrice %></td>
+                                    <td style="border: 1px solid white; padding: 8px; text-align: center; vertical-align: middle; font-size: small; font-weight: bold;"><%= coupon.expireOn.toLocaleDateString() %></td>
+
+                                    <td style="border: 1px solid white; text-align: center; padding: 0;  display: flex; justify-content: center; margin-top : 10px">
+                                        
+                                        <% if (coupon.isListed) { %>
+                                            <a href="/admin/listCoupon?id=<%= coupon._id %>" class="btn btn-success text-white " style="width: 75px; display: block; text-decoration: none; padding: 5px; margin-left: 15px;">Unlist</a>
+                                        <% } else { %>
+                                            <a href="/admin/unlistCoupon?id=<%= coupon._id %>" class="btn btn-danger text-white toggle-status" style="width: 75px; display: block; text-decoration: none; padding: 5px;margin-left: 20px;">List</a>
+                                        <% } %>
+                                    </td>
+
+                                    
+                                  
+
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- pagination code -->
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col text-end">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-lg justify-content-end">
+                                    <% if (currentPage > 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo; Previous</a>
+                                        </li>
+                                    <% } else { %>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">&laquo; Previous</span>
+                                        </li>
+                                    <% } %>
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <% if (i === currentPage) { %>
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link"><%= i %></span>
+                                            </li>
+                                        <% } else { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=<%= i %>&search=<%= search %>"><%= i %></a>
+                                            </li>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (currentPage < totalPages) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>">Next &raquo;</a>
+                                        </li>
+                                    <% } else { %>
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Next &raquo;</span>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                                
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<%- include('../layouts/admin/footer.ejs') -%>

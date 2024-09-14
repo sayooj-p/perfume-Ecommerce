@@ -28,8 +28,16 @@
                 <div class="flex items-center justify-between gap10 flex-wrap">
                     <a class="tf-button style-1 w208" href="/admin/add-product"><i class="icon-plus"></i>Add new</a>
                 </div>
-                <div class="table-responsive">
-                    <table class="table" style="border-collapse: collapse; margin-top: 20px;">
+                <% if (products.length === 0) { %>
+                    <div class="empty d-flex justify-center">
+                        <h4 class="text-name text-danger">product List Page is Empty</h4>
+                    </div>
+                   
+
+                 
+                <% }else { %>
+                <div class="table-responsive" style="    border-radius: 10px; box-shadow: 5px 5px 2px #e6e6e6;">
+                    <table class="table" style="border: none; margin-top: 20px;">
                         <thead>
                             <tr class="table-head pl-4">
                                 <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Image</th>
@@ -39,6 +47,8 @@
                                 <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Quantity</th>
                                 <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Category</th>
                                 <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Status</th>
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Offer</th>
+                                <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Offer</th>
                                 <th style="padding: 8px; text-align: center; background-color: #f8f9fa; border-color: white;font-size: small; font-weight: bold;">Action</th>
                             </tr>
                         </thead>
@@ -66,7 +76,7 @@
                                 <tr class="<%= product.isBlocked ? 'inactive' : '' %>">
                                     <td style="width: 70px;"> <!-- Set a fixed width for images -->
                                         <% product.productImage.forEach(image => { %>
-                                            <img src="<%= image %>" alt="<%= product.productName %>" style="width: 50px; height: auto; margin-right: 5px;">
+                                            <img src="<%= image %>" alt="<%= product.productName %>" style="width: 35px; height: auto; margin-right: 5px;">
                                         <% }) %>
                                     </td>
                                     <td>
@@ -78,6 +88,23 @@
                                     <td><%= product.category.name %></td>
                                     <td class="<%= product.status === 'in Stock' ? 'status-stock' : 'status-unstock' %>">
                                         <%= product.status %>
+                                    </td>
+                                    <td>
+                                        <% if (product.productOffer) { %>
+                                            <%=product.productOffer%>
+                                         
+                                        <% }else { %>
+                                                0%
+                                        <% } %>
+
+                                    </td>
+                                    <td>
+                                        <% if (product.productOffer === 0) { %>
+                                           
+                                            <button class="btn btn-info" onclick="addOffer('<%= product._id %>')" style="display: block;">Add Offer</button>
+                                        <% } else { %>
+                                            <button class="btn btn-danger" onclick="removeOffer('<%= product._id %>')" style="display: block;">Remove</button>
+                                        <% } %>
                                     </td>
                                     <td>
                                         <a href="/admin/edit-product/<%= product._id %>" class="btn btn-primary" style="margin-bottom: 5px; display: block;">Edit</a>
@@ -92,6 +119,7 @@
                         </tbody>
                     </table>
                 </div>
+              
                 
                 <div class="container">
                     <div class="row">
@@ -132,7 +160,85 @@
                         </div>
                     </div>
                 </div>
+                <%}%>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  async function addOffer(productId) {
+    const { value: amount } = await Swal.fire({
+        title: 'Offer in percentage',
+        input: 'number',
+        inputLabel: 'Percentage',
+        inputPlaceholder: '%',
+        inputAttributes: {
+            min: 0,
+            max: 100,
+            step: 1
+        },
+    });
+
+    if (amount) {
+        axios.post('/admin/addProductOffer', {
+            percentage: amount,
+            productId: productId
+        })
+        .then((response) => {
+            if (response.data.status === true) {
+                Swal.fire('Offer added', 'The offer has been added successfully', 'success')
+                    .then(() => {
+                        location.reload();
+                    });
+            } else {
+                Swal.fire('Error', response.data.message || 'Failed to add offer', 'error');
+            }
+        })
+        .catch((error) => {
+            Swal.fire('Error', 'There was a problem processing your request.', 'error');
+            console.error('Error adding offer:', error);
+        });
+    }
+}
+
+function removeOffer(productId) {
+    Swal.fire({
+        title: 'Remove Offer',
+        text: 'Are you sure you want to remove the offer?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, remove it!",
+        timer: 5000,
+        timerProgressBar: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.post('/admin/removeProductOffer', { productId: productId })
+                .then((response) => {
+                    if (response.data.status === true) {
+                        Swal.fire('Removed!', 'The offer has been removed successfully.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                    } else {
+                        Swal.fire('Error', 'Failed to remove offer', 'error');
+                    }
+                })
+                .catch((error) => {
+                    Swal.fire('Error', 'There was a problem processing your request.', 'error');
+                    console.error('Error removing offer:', error);
+                });
+        }
+    });
+}
+
+</script>
+
+
+
+
+<%- include('../layouts/admin/footer.ejs') -%>

@@ -1,4 +1,5 @@
 const Category = require('../../models/categoryModel');
+const Product = require('../../models/productModel');
 
 const categoryDetails = async (req, res) => {
     try {
@@ -106,6 +107,65 @@ const getUnListCategory = async (req, res) => {
     }
 };
 
+const addProductOffer =  async (req,res)=>{
+    try {
+        const percentage = parseInt(req.body.percentage);
+        const categoryId = req.body.categoryId;
+        const findCategory = await Category.findById(categoryId);
+        if(!findCategory) {
+            return res.status(404).json({status:false, message:"Category not found"});
+        }
+        const products = await Product.find({category:findCategory._id});
+        const hasProductOffer = products.some((product)=>product.productOffer>percentage);
+        if(hasProductOffer) {
+            return res.json({status:false, message:'products within this category have product  Offers'});
+        }
+        await Category.updateOne({_id:categoryId},{$set:{categoryOffer:percentage}});
+
+        for(const product of products) {
+            product.productOffer  = 0;
+            product.price = product.regularPrice;
+            await product.save();
+        }
+        res.json({status:true});
+        
+    } catch (error) {
+        console.log('error showing to add offers',error);
+        res.redirect('/pageNotFound');
+        
+        
+    }
+}
+
+const removeProductOffer = async(req,res)=>{
+    try {
+        const categoryId = req.body.categoryId;
+        const category = await Category.findById(categoryId);
+        if(!category){
+            return res.status(404).json({status:false, message:'Category not found'});
+        }
+        const percentage = category.categoryOffer;
+        const products = await Product.find({category:category._id});
+
+        if(products.length > 0){
+                for(const product of products){
+                    product.price += Math.floor(product.regularPrice * (percentage/100));
+                    product.productOffer = 0;
+                    await product.save();
+                }
+        }
+        category.categoryOffer = 0;
+        await category.save();
+        res.json({status:true})
+        
+    } catch (error) {
+        console.log('error to remove offer ',error);
+        res.redirect('/pageNotFound');
+        
+        
+    }
+}
+
 module.exports = {
     categoryDetails,
     loadAddCategory,
@@ -113,5 +173,7 @@ module.exports = {
     getListCategory,
     getUnListCategory,
     editCategory,
-    updateCategory
+    updateCategory,
+    addProductOffer,
+    removeProductOffer
 };

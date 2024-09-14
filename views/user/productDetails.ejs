@@ -47,7 +47,10 @@
                                 <a class="ratings-text" href="#product-review-link">(2 Reviews)</a>
                             </div>
                             <div class="product-price">
-                                Rs: <%= product.price %>
+                                Rs: <%= product.price %>   
+                            </div>
+                            <div class="regualar-price">
+                                (<strike><%= product.regularPrice%></strike>)
                             </div>
                             
                             <!-- Check if the product is in stock -->
@@ -61,10 +64,8 @@
 
                             <!-- Stock availability -->
                             <div class="product-stock">
-                                <% if (product.quantity > 0) { %>
-                                    <p class="p-stock"> (<%= product.quantity %> left in stock)</p>
-                                <% } else { %>
-                                    <p class="p-stock" style="color: red;"> (Out of Stock)</p>
+                                <% if (product.quantity <= 5 ) { %>
+                                    <p class="p-stock text-danger"> (<%= product.quantity %> only left)</p>
                                 <% } %>
                             </div>
 

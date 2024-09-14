@@ -14,6 +14,10 @@ const productSchema = new Schema({
         type: Number,
         required: true
     },
+    regularPrice:{
+        type:Number,
+
+    },
     quantity: {
         type: Number,
         default: 0,
@@ -37,7 +41,20 @@ const productSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref: 'Category',
         required:true
+    },
+    productOffer: {
+        type:Number,
+        default:0
     }
 }, { timestamps: true });
+
+productSchema.pre('save', function(next) {
+    if (this.quantity === 0) {
+        this.status = 'out of Stock';
+    } else {
+        this.status = 'in Stock';
+    }
+    next();
+});
 
 module.exports = mongoose.model('Product', productSchema);

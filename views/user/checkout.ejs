@@ -132,7 +132,7 @@
                                         <tr>
                                             <td>Coupon applied:</td>
                                             <td></td>
-                                            <td>0</td>
+                                            <td id="coupon-discount">0</td>
                                         </tr>
                                         <tr class="summary-total">
                                             <td>Total:</td>
@@ -216,33 +216,180 @@
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
-    document.getElementById('checkout-form').addEventListener('submit', function(event) {
-        const addressSelected = document.querySelector('input[name="addressId"]:checked');
-        const paymentMethodSelected = document.querySelector('input[name="paymentMethod"]:checked');
+   document.getElementById('checkout-form').addEventListener('submit', async function(event) {
+    event.preventDefault();  // Prevent default form submission
 
-        // Check if no address is selected
-        if (!addressSelected) {
-            event.preventDefault();
-            Swal.fire({
-                icon: 'warning',
-                title: 'No Address Selected',
-                text: 'Please select a delivery address before placing your order.',
-            });
-            return;
-        }
+    const addressSelected = document.querySelector('input[name="addressId"]:checked');
+    const paymentMethodSelected = document.querySelector('input[name="paymentMethod"]:checked');
+    const totalPrice = parseFloat(document.querySelector('#grand-total').innerText.replace('₹', ''));
 
-        // Check if no payment method is selected
-        if (!paymentMethodSelected) {
-            event.preventDefault();
+    // Check if no address is selected
+    if (!addressSelected) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Address Selected',
+            text: 'Please select a delivery address before placing your order.',
+        });
+        return;
+    }
+
+    // Check if no payment method is selected
+    if (!paymentMethodSelected) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Payment Method Selected',
+            text: 'Please select a payment method before placing your order.',
+        });
+        return;
+    }
+
+    // Handle Razorpay payment if 'online-payment' is selected
+    if (paymentMethodSelected.value === 'online-payment') {
+        try {
+            const response = await axios.post('/create-order', {
+                amount: Math.round(totalPrice * 100),  // Total amount in paisa
+                cartId: "<%= cartId %>"
+            });
+            
+            const data = response.data;
+            console.log(data);
+            
+            if (data.success) {
+                const options = {
+                    "key": data.razorpayKey,
+                    "amount": data.order.amount,
+                    "currency": "INR",
+                    "name": "PerfumParadise",
+                    "description": "Purchase Order",
+                    "order_id": data.order.id,
+                    "handler": function (response) {
+                        handlePaymentSuccess(
+                            response.razorpay_payment_id,
+                            response.razorpay_order_id,
+                            response.razorpay_signature
+                        );
+                    },
+                    "prefill": {
+                        name: data.user.name,
+                      
+                    },
+                    "theme": {
+                        "color": "#3399cc"
+                    }
+                };
+
+                const rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Payment Failed. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+                rzp1.open();
+            }
+        } catch (error) {
             Swal.fire({
-                icon: 'warning',
-                title: 'No Payment Method Selected',
-                text: 'Please select a payment method before placing your order.',
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to initiate the payment. Please try again.',
             });
         }
-    });
+    }else if (paymentMethodSelected.value === 'cash-on-delivery') {
+        // Handle the Cash on Delivery (COD) scenario
+        try {
+            const response = await axios.post('/order-success', {
+                addressId: addressSelected.value,
+                paymentMethod: 'cash-on-delivery',
+                cartId: "<%= cartId %>"
+            });
+
+            const data = response.data;
+
+            if (data.success) {
+                Swal.fire({
+                    title: 'Order Success!',
+                    text: 'Your order has been placed successfully!',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                }).then(() => {
+                    window.location.href = `/order-success?orderId=${data.orderId}`;
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to place order. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        } catch (error) {
+            console.error('Error placing order:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while placing your order. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+        });
+  
+// Function to handle payment success
+async function handlePaymentSuccess(paymentId, razorpayOrderId, signature) {
+    try {
+        // First, place the order
+        const placeOrderResponse = await axios.post('/order-success', {
+            paymentId,
+            razorpayOrderId,
+            signature,
+            addressId: document.querySelector('input[name="addressId"]:checked').value,
+            paymentMethod: 'online-payment',
+            cartId: "<%= cartId %>",
+            
+        });
+        // console.log("12345",placeOrderResponse);
+        
+
+        const orderId = placeOrderResponse.data.orderId;
+        // console.log("11",orderId);
+        
+
+        // Then, verify the payment
+        const verifyResponse = await axios.post('/verify-payment', {
+            paymentId,
+            razorpayOrderId,
+            signature,
+            orderId
+        });
+        // console.log("444444444444444444",verifyResponse);
+        
+
+        if (verifyResponse.data.success) {
+            // If verification is successful, redirect to order success page
+            window.location.href = `/order-success?orderId=${orderId}`;
+        } else {
+            Swal.fire('Payment Verification Failed', verifyResponse.data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error processing the payment:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'An error occurred during payment processing. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+}
+
 </script>
+
+
 
 <%- include('../layouts/user/footer.ejs') -%>

@@ -79,6 +79,7 @@
                   <h5><%= item.product.name %></h5>
                   <p>Quantity: <%= item.quantity %></p>
                   <p>Price: ₹<%= item.price %></p>
+                  
                 </div>
                 <div class="item-total" style="text-align: right;">
                   <p>Total: ₹<%= item.quantity * item.price %></p>
@@ -119,8 +120,18 @@
               <p><strong>Subtotal:</strong> ₹<%= order.orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0) %></p>
               <p><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
               <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-              <p><strong>Status:</strong> <%= order.status %></p>
+              <p>
+                <strong>Status:</strong> 
+                <span 
+                  style=" font-weight: bolder; color: <%= order.status === 'Cancelled' ? 'red' : 'green' %>">
+                  <%= order.status %>
+                </span>
+              </p>
               <p><strong>Order Date:</strong> <%= new Date(order.createdOn).toLocaleDateString() %></p>
+              <% if(order.paymentMethod === 'online-payment') { %>
+              <p><strong>PaymentId:</strong> <%= order.razorpay.paymentId %></p>
+              <% } %>
+              <p><strong>paymentStatus:</strong> <%= order.paymentStatus %></p>
             </div>
           </div>
 

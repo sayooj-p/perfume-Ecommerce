@@ -2,6 +2,7 @@ const path = require('path');
 const mongoose = require("mongoose");
 const express = require("express");
 const cartCountMiddleware = require('./middlware/cartCount');
+const wishListCountMiddleware = require('./middlware/wishListCount');
 const app = express();
 require('dotenv').config();
 const session = require('express-session');
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // console.log(path.join(__dirname, 'public'));
 
 app.use(cartCountMiddleware); 
+app.use(wishListCountMiddleware); 
 
 
 const userRoute = require('./routers/userRoute');

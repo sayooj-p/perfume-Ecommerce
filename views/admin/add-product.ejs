@@ -33,12 +33,11 @@
                             </div>
                         </fieldset>
                         <fieldset class="status">
-                            <div class="body-title mb-10">Status <span class="tf-color-1">*</span></div>
-                            <div class="select">
-                                <select id="status" name="status" required>
-                                    <option value="in Stock">in Stock</option>
-                                    <option value="out of Stock">out of Stock</option>
-                                </select>
+                            <div class="body-title mb-10">RegularPrice <span class="tf-color-1">*</span></div>
+                            <div class="regularPrice">
+                              
+                                <input class="mb-10" type="text" id="regularPrice" name="regularPrice" placeholder="Enter Regular price" tabindex="0" required>
+                                <div class="error-message" style="color: red;" id="error-regprice"></div>
                             </div>
                         </fieldset>
                     </div>
@@ -74,7 +73,7 @@
                                         </div>
                                     </div>
                                     <button type="button" id="btnCrop1" style="display:none;">Crop Image</button>
-                                    <button type="button" id="btnRefresh1" style="display:none;">Refresh</button>
+                                    <!-- <button type="button" id="btnRefresh1" style="display:none;">Refresh</button> -->
                                 </fieldset>
                             </div>
 
@@ -94,7 +93,7 @@
                                         </div>
                                     </div>
                                     <button type="button" id="btnCrop2" style="display:none;">Crop Image</button>
-                                    <button type="button" id="btnRefresh2" style="display:none;">Refresh</button>
+                                    <!-- <button type="button" id="btnRefresh2" style="display:none;">Refresh</button> -->
                                 </fieldset>
                             </div>
 
@@ -114,7 +113,7 @@
                                         </div>
                                     </div>
                                     <button type="button" id="btnCrop3" style="display:none;">Crop Image</button>
-                                    <button type="button" id="btnRefresh3" style="display:none;">Refresh</button>
+                                    
                                 </fieldset>
                             </div>
                         </div>
@@ -176,7 +175,7 @@
         if (imageNumber === 3) cropper3 = cropperInstance;
 
         document.getElementById('btnCrop' + imageNumber).style.display = 'inline-block';
-        document.getElementById('btnRefresh' + imageNumber).style.display = 'inline-block';
+        // document.getElementById('btnRefresh' + imageNumber).style.display = 'inline-block';
     }
 
     function cropImage(imageNumber) {
@@ -210,19 +209,19 @@
     document.getElementById('btnCrop2').addEventListener('click', function() { cropImage(2); });
     document.getElementById('btnCrop3').addEventListener('click', function() { cropImage(3); });
 
-    document.getElementById('btnRefresh1').addEventListener('click', function() { refreshImage(1); });
-    document.getElementById('btnRefresh2').addEventListener('click', function() { refreshImage(2); });
-    document.getElementById('btnRefresh3').addEventListener('click', function() { refreshImage(3); });
+
 
     document.addEventListener("DOMContentLoaded", () => {
         const nameid = document.getElementById('productName');
         const stockid = document.getElementById('quantity');
         const priceid = document.getElementById('price');
+        const regpriceid = document.getElementById('regularPrice');
         const validateform = document.getElementById('validateform');
         
         const nameError = document.getElementById('error-name');
         const stockError = document.getElementById('error-stock');
         const priceError = document.getElementById('error-price');
+        const regpriceError = document.getElementById('error-regprice');
 
         function nameValidateChecking() {
             const nameVal = nameid.value;
@@ -265,13 +264,26 @@
                 priceError.innerHTML = "";
             }
         }
+        function regpriceValidateChecking() {
+            const regpriceVal = regpriceid.value;
+            const regpricePattern = /^\d+(\.\d{1,2})?$/;
+            
+            if (!regpricePattern.test(regpriceVal)) {
+                regpriceError.style.display = "block";
+                regpriceError.innerHTML = "Please enter a valid regular price (positive number with up to two decimal places).";
+            } else {
+                regpriceError.style.display = "none";
+                regpriceError.innerHTML = "";
+            }
+        }
 
         validateform.addEventListener('submit', (e) => {
             nameValidateChecking();
             stockValidateChecking();
             priceValidateChecking();
+            regpriceValidateChecking();
             // Check if there are any errors and prevent form submission if there are
-            if (nameError.innerHTML || stockError.innerHTML || priceError.innerHTML) {
+            if (nameError.innerHTML || stockError.innerHTML || priceError.innerHTML || regpriceError.innerHTML) {
                 e.preventDefault();
             }
         });

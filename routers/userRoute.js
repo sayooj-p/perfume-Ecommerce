@@ -6,6 +6,7 @@ const cartController = require('../controllers/user/cartController')
 const checkoutController = require('../controllers/user/checkoutController');
 const orderController = require('../controllers/user/orderController');
 const shopController = require('../controllers/user/shopController');
+const wishListController = require('../controllers/user/wishListController');
 const passport = require("../config/passport")
 const userAuth= require('../middlware/auth');
 
@@ -90,8 +91,16 @@ user_route.get('/order-success',userAuth,orderController.getOrderDetails);
 user_route.post('/order-success',userAuth,orderController.placeOrder);
 user_route.get('/view-orderDetails/:orderId',userAuth,orderController.viewOrderDetails);
 user_route.post('/cancelOrder',userAuth,orderController.cancelOrder);
+user_route.post('/create-order',userAuth,orderController.createOrder);
+user_route.post('/verify-payment',userAuth,orderController.verifyPayment);
+
 
 user_route.get('/myOrder',userAuth,orderController.myOrder);
+
+//wishList Managment
+user_route.get('/wishList',userAuth,wishListController.getWishList)
+user_route.post('/wishList',userAuth,wishListController.addToWishList);
+user_route.delete('/wishList/:productId',userAuth,wishListController.deleteWishList);
 
 
 

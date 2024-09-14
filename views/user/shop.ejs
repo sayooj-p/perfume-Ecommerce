@@ -10,6 +10,21 @@
     color: #f00;
 }
 
+    .product-main{
+           
+          /* border: 1px solid white; */
+            border-radius: 10px; 
+                /* box-shadow: 4px 4px 4px #8d8d8d; */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for smooth animation */
+        }
+
+    .product-main:hover {
+             transform: scale(1.05); /* Zoom effect on hover */
+            box-shadow: 3px 3px 8px #8d8d8d; /* Slightly increase shadow for depth effect */
+        }
+
+                      
+
 </style>
 
 <main class="main">
@@ -71,7 +86,7 @@
                         <div class="row justify-content-center">
                             <% products.forEach(product => { %>
                                 <% if (product.isBlocked === false) { %>
-                                    <div class="col-6 col-md-4 col-lg-4">
+                                    <div class="product-main col-md-4 col-lg-4">
                                         <div class="product product-7 text-center">
                                             <figure class="product-media">
                                                 <a href="/productdetails/<%= product._id %>">
@@ -99,10 +114,10 @@
                                                 </div><!-- End .product-cat -->
                                                 <h4 class="product-name font-weight-normal"><%= product.productName %></h4>
                                                 <div class="product-status">
-                                                    <% if (product.status === 'in Stock') { %>
-                                                        <h5 class="status" style="color: green;"><%= product.status %></h5>
+                                                    <% if (product.quantity > 0) { %>
+                                                        <h5 class="status" style="color: green;">In Stock</h5>
                                                     <% } else { %>
-                                                        <h5 class="status" style="color: red;"><%= product.status %></h5>
+                                                        <h5 class="status" style="color: red;">Out of Stock</h5>
                                                     <% } %>
                                                 </div><!-- End .product-status -->
                                                 <div class="product-price">

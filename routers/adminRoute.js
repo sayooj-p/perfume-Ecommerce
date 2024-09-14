@@ -5,6 +5,7 @@ const customerController = require('../controllers/admin/customerController');
 const productController = require('../controllers/admin/productController');
 const categoryController = require('../controllers/admin/categoryController');
 const orderController = require('../controllers/admin/orderController');
+const couponController = require('../controllers/admin/couponController');
 const adminAuth = require("../middlware/adminAuth");
 const upload = require('../middlware/multer')
 const session = require('express-session');
@@ -52,6 +53,8 @@ admin_route.post('/update-product/:id', adminAuth, upload.fields([
 admin_route.get('/listproducts', adminAuth, productController.listProduct);
 admin_route.get('/unlistproducts', adminAuth, productController.unlistProduct);
 admin_route.delete('/delete-image', adminAuth, productController.deleteImage);
+admin_route.post('/addProductOffer',adminAuth,productController.addProductOffer);
+admin_route.post('/removeProductOffer',adminAuth,productController.removeProductOffer);
 
 // Category Management
 admin_route.get('/category', adminAuth, categoryController.categoryDetails);
@@ -59,14 +62,26 @@ admin_route.get('/add-Category', adminAuth, categoryController.loadAddCategory);
 admin_route.post('/add-Category', adminAuth, categoryController.addCategory);
 admin_route.get('/listCategory', adminAuth, categoryController.getListCategory);
 admin_route.get('/unlistCategory', adminAuth, categoryController.getUnListCategory);
-admin_route.get('/edit-category/:id', adminAuth, categoryController.editCategory);
+admin_route.get('/edit-category', adminAuth, categoryController.editCategory);
 admin_route.post('/edit-category/:id', adminAuth, categoryController.updateCategory);
+admin_route.post('/addCategoryOffer',adminAuth,categoryController.addProductOffer);
+admin_route.post('/removeCategoryOffer',adminAuth,categoryController.removeProductOffer);
 
 //order managment
 
 admin_route.get('/orderList', adminAuth, orderController.getOrder);
 admin_route.get('/viewOrder/:orderId', adminAuth, orderController.viewOrder);
 admin_route.post('/updateOrderStatus', adminAuth, orderController.updateOrderStatus);
+
+//coupon managment
+admin_route.get('/couponList',adminAuth,couponController.getCoupon);
+admin_route.get('/add-coupon', adminAuth, couponController.loadAddCoupon);
+admin_route.post('/add-coupon', adminAuth, couponController.addCoupon);
+admin_route.get('/listCoupon', adminAuth, couponController.listCoupon);
+admin_route.get('/unlistCoupon', adminAuth, couponController.unlistCoupon);
+
+
+
 
 
 module.exports = admin_route;
