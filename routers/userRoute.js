@@ -7,8 +7,11 @@ const checkoutController = require('../controllers/user/checkoutController');
 const orderController = require('../controllers/user/orderController');
 const shopController = require('../controllers/user/shopController');
 const wishListController = require('../controllers/user/wishListController');
+const walletController = require('../controllers/user/walletController');
 const passport = require("../config/passport")
 const userAuth= require('../middlware/auth');
+
+
 
 user_route.set("view engine", "ejs");
 user_route.set("views", "./views/user");
@@ -78,6 +81,14 @@ user_route.get('/add-address',userAuth,checkoutController.loadAddAddress);
 user_route.post('/add-address',userAuth,checkoutController.addAddress);
 user_route.get('/edit-address/:addressId',userAuth,checkoutController.editAddress);
 user_route.post('/update-address/:addressId', userAuth, checkoutController.updateAddress);
+user_route.post('/apply-coupon', userAuth, checkoutController.applyCoupon);
+user_route.post('/create-order',userAuth,checkoutController.createOrder);
+user_route.post('/verify-payment',userAuth,checkoutController.verifyPayment);
+user_route.post('/order-success',userAuth,checkoutController.placeOrder);
+user_route.post('/initiate-repayment' ,userAuth,checkoutController.initiateRepayment)
+user_route.post('/verify-repayment' ,userAuth,checkoutController.verifyRepayment)
+
+
 
 //shop managment
 
@@ -88,20 +99,21 @@ user_route.get('/shop',shopController.getShop);
 //order Managment
 
 user_route.get('/order-success',userAuth,orderController.getOrderDetails);
-user_route.post('/order-success',userAuth,orderController.placeOrder);
+
 user_route.get('/view-orderDetails/:orderId',userAuth,orderController.viewOrderDetails);
 user_route.post('/cancelOrder',userAuth,orderController.cancelOrder);
-user_route.post('/create-order',userAuth,orderController.createOrder);
-user_route.post('/verify-payment',userAuth,orderController.verifyPayment);
-
-
+user_route.post('/returnOrder',userAuth,orderController.returnOrder);
 user_route.get('/myOrder',userAuth,orderController.myOrder);
+user_route.get('/downloadInvoice',userAuth,orderController.downloadInvoice);
 
 //wishList Managment
 user_route.get('/wishList',userAuth,wishListController.getWishList)
 user_route.post('/wishList',userAuth,wishListController.addToWishList);
 user_route.delete('/wishList/:productId',userAuth,wishListController.deleteWishList);
 
+//wallet
+
+user_route.get('/loadWallet',userAuth,walletController.loadWalletPage)
 
 
 

@@ -31,23 +31,27 @@ const addToWishList = async (req, res) => {
             console.log('Created new wishlist for user');
         }
 
+        // Check if the product is already in the wishlist
         const productExists = wishList.products.some(
             (item) => item.productId.toString() === productId
         );
 
         if (!productExists) {
+            // Only add the product if it doesn't already exist in the wishlist
             wishList.products.push({ productId });
+            await wishList.save();
+            res.json({ success: true, message: 'Product added to wishlist' });
+        } else {
+            // Product is already in the wishlist
+            res.json({ success: false, message: 'Product is already in your wishlist' });
         }
 
-        await wishList.save();
-
-        // Sending success response
-        res.json({ success: true });
     } catch (error) {
         console.error('Error adding to wishlist:', error);
         res.status(500).json({ success: false, error: "Server Error" });
     }
 };
+
 
 const deleteWishList = async (req, res) => {
     try {

@@ -6,7 +6,7 @@
         <!-- main-content-wrap -->
         <div class="main-content-wrap">
             <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>All Categories</h3>
+                <h3>All Coupons</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                     <li>
                         <a href="index.html"><div class="text-tiny">Dashboard</div></a>
@@ -91,6 +91,7 @@
                         <div class="col text-end">
                             <nav aria-label="Page navigation">
                                 <ul class="pagination pagination-lg justify-content-end">
+                                    <!-- Previous button -->
                                     <% if (currentPage > 1) { %>
                                         <li class="page-item">
                                             <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo; Previous</a>
@@ -100,6 +101,8 @@
                                             <span class="page-link">&laquo; Previous</span>
                                         </li>
                                     <% } %>
+                
+                                    <!-- Page number links -->
                                     <% for (let i = 1; i <= totalPages; i++) { %>
                                         <% if (i === currentPage) { %>
                                             <li class="page-item active" aria-current="page">
@@ -111,6 +114,8 @@
                                             </li>
                                         <% } %>
                                     <% } %>
+                
+                                    <!-- Next button -->
                                     <% if (currentPage < totalPages) { %>
                                         <li class="page-item">
                                             <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>">Next &raquo;</a>
@@ -121,11 +126,11 @@
                                         </li>
                                     <% } %>
                                 </ul>
-                                
                             </nav>
                         </div>
                     </div>
                 </div>
+                
 
             </div>
         </div>

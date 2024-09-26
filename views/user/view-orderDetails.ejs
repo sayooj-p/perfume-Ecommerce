@@ -32,7 +32,20 @@
 .btn-cancel-order:hover {
   background-color: #c82333;
 }
+.btn-invoice-order {
+  background-color: #909090;
+  color: white;
+  height: 39px;
+  margin-left: 10px;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
+.btn-invoice-order:hover {
+  background-color: #606060;
+}
 .shipping-address, .order-summary {
   background-color: #f8f9fa;
   padding: 20px;
@@ -54,7 +67,7 @@
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Home</a></li>
         <li class="breadcrumb-item"><a href="/profile">Profile</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+        <li class="breadcrumb-item active" aria-current="page"><%= order.orderId %></li>
       </ol>
     </div>
   </nav>
@@ -87,14 +100,28 @@
               </div>
               <% }); %>
             </div>
-            <!-- Cancel Order Button -->
-            <div class="order-action mt-4 d-flex justify-content-end">
-              <% if (order.status === 'Cancelled') { %>
-               <h3 class="text-danger">Order has been cancelled</h3>
-              <% }else{ %>
-              <button class="btn btn-danger btn-cancel-order" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
-              <% } %>
-            </div>
+            <!-- Conditionally Render Cancel or Return Order Button -->
+                <div class="order-action mt-4 d-flex justify-content-end">
+                  <div>
+                  <% if (order.status === 'Cancelled') { %>
+                    <h3 class="text-danger">Order has been cancelled</h3>
+                  <% } else if (order.status === 'Delivered') { %>
+                    <button class="btn btn-warning btn-return-order" onclick="returnOrder('<%= order._id %>')">Return Order</button>
+                  <% } else if(order.status === 'Pending' ||order.status === 'Processing' ) { %>
+                    <button class="btn btn-danger btn-cancel-order" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
+                  <% } %>
+                </div>
+                <div>
+                  <% if (order.status==='Delivered' ||
+                  order.status==='Return Request' ||
+                  order.status==='Returned' ) { %>
+                  <button class="btn btn-invoice-order  text-dark"
+                      onclick="window.location.href='/downloadInvoice?orderId=<%= order._id %>'">Download
+                      Invoice</button>
+                  <% } %>
+                </div>
+                </div>
+
           </div>
 
           <!-- Order Summary -->
@@ -117,21 +144,32 @@
           <div class="order-summary mb-3">
             <h4 class="text-muted mb-4">Order Summary</h4>
             <div class="summary-table">
-              <p><strong>Subtotal:</strong> ₹<%= order.orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0) %></p>
-              <p><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
-              <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-              <p>
-                <strong>Status:</strong> 
-                <span 
-                  style=" font-weight: bolder; color: <%= order.status === 'Cancelled' ? 'red' : 'green' %>">
-                  <%= order.status %>
-                </span>
-              </p>
+             <div class="order-summary-part d-flex justify-content-between">
+              <div>
+                <p><strong>Subtotal:</strong> ₹<%= order.orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0) %></p>
+                <p><strong>Total Price:</strong> ₹<%= order.finalAmount %></p>
+                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                <p>
+                  <strong>Status:</strong> 
+                  <span 
+                    style=" font-weight: bolder; color: <%= order.status === 'Cancelled' ? 'red' : 'green' %>">
+                    <%= order.status %>
+                  </span>
+                </p>
+              </div>
+             <div>
               <p><strong>Order Date:</strong> <%= new Date(order.createdOn).toLocaleDateString() %></p>
               <% if(order.paymentMethod === 'online-payment') { %>
               <p><strong>PaymentId:</strong> <%= order.razorpay.paymentId %></p>
               <% } %>
               <p><strong>paymentStatus:</strong> <%= order.paymentStatus %></p>
+              <p><strong>couponApplied:</strong> <%= order.couponApplied === true ? 'Yes':'No'%></p>
+              <p><strong>couponCode:</strong> <%= order.couponCode === null ? 'no coupon':order.couponCode%></p>
+             </div>
+             </div>
+              
+
+
             </div>
           </div>
 
@@ -183,6 +221,48 @@
                     }
                 }
             }
+            async function returnOrder(orderId) {
+    const confirmResult = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to return this order?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, return it!',
+        cancelButtonText: 'No, keep it'
+    });
+
+    if (confirmResult.isConfirmed) {
+        try {
+            // This line will throw an error if, for example, there's a network failure
+            const response = await axios.post('/returnOrder', { orderId });
+
+            if (response.data.success) {
+                Swal.fire(
+                    'Requested!',
+                    'Your return request has been placed.',
+                    'success'
+                ).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire(
+                    'Failed!',
+                    response.data.message,
+                    'error'
+                );
+            }
+        } catch (error) {
+            // The catch block handles any errors that occur in the try block
+            console.error('Error:', error);  // Log the error for debugging purposes
+            Swal.fire(
+                'Error!',
+                'Failed to process the return request. Please try again.',
+                'error'
+            );
+        }
+    }
+}
+
       </script>
 
 <%- include('../layouts/user/footer.ejs') -%>

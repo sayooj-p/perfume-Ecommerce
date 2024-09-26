@@ -1,0 +1,289 @@
+<%- include('../layouts/admin/header.ejs') -%>
+<style>
+    /* General table styling */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1rem; /* Increase font size */
+}
+
+/* Table header */
+.table thead th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Table rows */
+.table tbody tr {
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Table cells */
+.table tbody td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Table row hover effect */
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* List inside table cell */
+.list-unstyled {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* List item styling */
+.list-unstyled li {
+    padding: 5px 0;
+    font-size: 0.9rem; /* Adjust font size for list items */
+}
+
+/* No items message styling */
+.table .no-items {
+    text-align: center;
+    font-size: 1rem;
+    color: #888;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.9rem; /* Smaller font size on smaller screens */
+    }
+}
+
+</style>
+<!-- main-content -->
+<div class="main-content">
+    <!-- main-content-wrap -->
+    <div class="main-content-inner">
+        <!-- main-content-wrap -->
+        <div class="main-content-wrap">
+            <div class="content-header d-flex justify-content-between align-items-center mb-4">
+                <header class="card-header">
+                    <h3 class="content-title card-title">Sales Report</h3>
+                </header>
+                <div class="download-buttons">
+                    <a href="/admin/excel" class="btn btn-success rounded-0 py-2 me-3" style="width: 92px;">Download Excel</a>
+                    <a href="/admin/pdf" class="btn btn-danger rounded-0 py-2" style="width: 92px;">Download PDF</a>
+                </div>
+            </div>
+            
+            <!-- Filter Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Filter Sales Report</h5>
+                </div>
+                <div class="card-body">
+                    <form id="sales-filter-form" class="d-flex flex-column gap-3">
+                        <!-- Date Range Picker -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" id="startDate" class="form-control" style="width: 180px;">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" id="endDate" class="form-control" style="width: 180px;" >
+                            </div>
+                        </div>
+            
+                        <!-- Quick Filters (Day, Week, Month, Year) -->
+                        <div class="btn-group mb-3" role="group" aria-label="Quick Filters">
+                            <button type="button" class="btn btn-outline-primary" onclick="setFilter('daily')">Daily</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="setFilter('weekly')">Weekly</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="setFilter('monthly')">Monthly</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="setFilter('yearly')">Yearly</button>
+                        </div>
+            
+                        <!-- Generate Report Button -->
+                        <button type="button" class="btn btn-primary" onclick="generateReport()" style="width: 130px;">Generate Report</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Sales Report Display -->
+            <!-- <div class="card">
+                <div class="card-header">
+                    <h5>Generated Sales Report</h5>
+                </div>
+                <div class="card-body">
+                    <div id="salesReportContent">
+                         This will be populated with data via JavaScript 
+                        <div class="mb-2"><strong>Overall Sales Count:</strong> <span id="salesCount">0</span></div>
+                        <div class="mb-2"><strong>Overall Order Amount:</strong> <span id="orderAmount">₹0.00</span></div>
+                        <div class="mb-2"><strong>Overall Discounts Applied:</strong> <span id="discountAmount">₹0.00</span></div>
+                        <div class="mb-2"><strong>Coupons Deduction:</strong> <span id="couponsAmount">₹0.00</span></div>
+                    </div>
+                </div>
+            </div> -->
+            
+           
+            
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card shadow-sm p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box me-3">
+                                <i class="icon-shopping-bag"></i>
+                            </div>
+                            <div>
+                                <div class="body-text mb-2">Total Sales Count</div>
+                                <h4><%= salesCount %></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box me-3">
+                                <i class="icon-dollar-sign"></i>
+                            </div>
+                            <div>
+                                <div class="body-text mb-2">Total Order Amount</div>
+                                <h4>₹<%= totalAmount.toFixed(2) %></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box me-3">
+                                <i class="icon-users"></i>
+                            </div>
+                            <div>
+                                <div class="body-text mb-2">Total Discount</div>
+                                <h4>₹<%= totalDiscount.toFixed(2) %></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           <!-- Sales Report Table -->
+                <div class="wg-box">
+                    <h5>Transfer History</h5>
+                    <% if (salesReport.length > 0) { %>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Order ID</th>
+                                <th>User Name</th>
+                                <th>Products</th>
+                                <th>Total Amount</th>
+                                <th>Discount</th>
+                                <th>Coupon Applied</th>
+                                <th>Payment Method</th>
+                                <th>Order Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% salesReport.forEach(order => { %>
+                            <tr id="order-<%= order._id %>">
+                                <td><%= order.orderId %></td>
+                                <td><%= order.userId ? order.userId.name : 'Guest' %></td>
+                                <td>
+                                    <!-- Display all product names from orderedItems -->
+                                    <ul class="list-unstyled">
+                                        <% if (order.orderItems && order.orderItems.length > 0) { %>
+                                            <% order.orderItems.forEach(item => { %>
+                                                <li>
+                                                    <%= item.product.productName %> (Qty: <%= item.quantity %>)
+                                                </li>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <li class="no-items">No items found.</li>
+                                        <% } %>
+                                    </ul>
+                                </td>
+                                <td>₹<%= order.finalAmount.toFixed(2) %></td>
+                                <td>₹<%= order.discount.toFixed(2) %></td>
+                                <td><%= order.couponApplied ? 'Yes' : 'No' %></td>
+                                <td><%= order.paymentMethod %></td>
+                                <td><%= order.status %></td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    <% } else { %>
+                        <h1 class="text-center py-5">No sales report found.</h1>
+                    <% } %>
+                </div>
+
+        </div>
+        <!-- /main-content-wrap -->
+    </div>
+    <!-- /main-content-inner -->
+</div>
+<!-- /main-content -->
+
+<script>
+    // Function to set predefined filters
+function setFilter(type) {
+    const today = new Date();
+    let startDate, endDate;
+    
+    switch(type) {
+        case 'daily':
+            startDate = today.toISOString().split('T')[0];
+            endDate = today.toISOString().split('T')[0];
+            break;
+        case 'weekly':
+            startDate = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0];
+            endDate = new Date().toISOString().split('T')[0];
+            break;
+        case 'monthly':
+            startDate = new Date(today.setMonth(today.getMonth() - 1)).toISOString().split('T')[0];
+            endDate = new Date().toISOString().split('T')[0];
+            break;
+        case 'yearly':
+            startDate = new Date(today.setFullYear(today.getFullYear() - 1)).toISOString().split('T')[0];
+            endDate = new Date().toISOString().split('T')[0];
+            break;
+    }
+
+    document.getElementById('startDate').value = startDate;
+    document.getElementById('endDate').value = endDate;
+}
+
+// Function to simulate report generation
+function generateReport() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    // if (!startDate || !endDate) {
+    //     alert('Please select a valid date range.');
+    //     return;
+    // }
+
+    // Simulated sales data
+    // const salesData = {
+    //     salesCount: 120, // Example data
+    //     orderAmount: 5000,
+    //     discountAmount: 300,
+    //     couponsAmount: 200
+    // };
+
+    // Update the report in the DOM
+    document.getElementById('salesCount').textContent = salesData.salesCount;
+    document.getElementById('orderAmount').textContent = `₹${salesData.orderAmount.toFixed(2)}`;
+    document.getElementById('discountAmount').textContent = `₹${salesData.discountAmount.toFixed(2)}`;
+    document.getElementById('couponsAmount').textContent = `₹${salesData.couponsAmount.toFixed(2)}`;
+}
+
+</script>
+<%- include('../layouts/admin/footer.ejs') -%>

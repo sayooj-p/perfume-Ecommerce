@@ -4,16 +4,13 @@ const Product = require("../../models/productModel");
 
 const getCart = async (req, res) => {
   try {
-    const user = req.session.user;
     const userId = req.session.user._id;
 
-    // Log the userId to ensure it's correct
-    // console.log(`Fetching cart for userId: ${userId}`);
-
-    let cart = await Cart.findOne({ userId }).populate("items.productId");
-
-    // Log the result of the cart query
-    // console.log("Cart:", cart);
+    // Fetch the cart and populate product and category details
+    let cart = await Cart.findOne({ userId }).populate({
+      path: "items.productId",
+      populate: { path: "category", model: "Category" } // Assuming you have a category model
+    });
 
     if (!cart) {
       // If no cart exists, initialize an empty cart
@@ -22,25 +19,38 @@ const getCart = async (req, res) => {
     }
 
     let total = 0;
+    let totalOfferDiscount = 0;
 
+    // Calculate total and discount
     cart.items = cart.items.filter((item) => {
       if (item.productId) {
-        item.totalPrice = item.quantity * item.price;
-        total += item.totalPrice;
+        const productOffer = item.productId.productOffer || 0; // Get product-specific offer
+        const categoryOffer = item.productId.category.categoryOffer || 0; // Get category offer (use optional chaining in case category doesn't exist)
+        
+        // Apply the higher offer between product offer and category offer
+        const effectiveOffer = (productOffer >= categoryOffer) ? productOffer : categoryOffer;
+        const offerDiscount = (effectiveOffer * item.price / 100) * item.quantity; // Calculate discount based on the effective offer
 
-        return true;
+        // Calculate total price and accumulate total discount
+        item.totalPrice = item.quantity * item.price; // Total without discount
+        totalOfferDiscount += offerDiscount; // Accumulate the total discount
+        total += item.totalPrice - offerDiscount; // Update total after applying discount
+
+        return true; // Keep the item in the cart
       } else {
-        return false;
+        return false; // Remove the item if it doesn't have a valid productId
       }
     });
 
-
-    res.render("cart", { cartItems: cart.items, total, user });
+    // Render the cart page with total and discount values
+    res.render("cart", { cartItems: cart.items, total, totalOfferDiscount });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
   }
 };
+
+
 
 const addItemToCart = async (req, res) => {
   try {
@@ -113,35 +123,49 @@ const updateCart = async (req, res) => {
 
   try {
     // Find the cart for the logged-in user
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ userId }).populate("items.productId");
 
     if (cart) {
       // Find the item in the cart
-      const item = cart.items.find(
-        (item) => item.productId.toString() === productId
-      );
+      const item = cart.items.find((item) => item.productId._id.toString() === productId);
 
       if (item) {
+        // Update the quantity and recalculate the total price and discount
         item.quantity = quantity;
-        item.totalPrice = item.price * quantity;
-
+        const productOffer = item.productId.productOffer || 0; // Get the product's offer
+        const categoryOffer = item.productId.category.categoryOffer || 0;
+        if(productOffer) {
+          const offerDiscount = (productOffer * item.price / 100) * item.quantity; // Calculate offer discount
+          item.totalPrice = item.quantity * item.price ; // Total price after discount
+          item.total = item.totalPrice - offerDiscount;
+        }else {
+          const offerDiscount = (categoryOffer * item.price / 100) * item.quantity; 
+          item.totalPrice = item.quantity * item.price ;
+          item.total = item.totalPrice - offerDiscount;
+        }
+       
+        
         // Save the updated cart
         await cart.save();
 
-        let total = 0;
+        // Recalculate the grand total and total discounts
+        let grandTotal = 0;
+        let totalOfferDiscount = 0;
 
-        cart.items = cart.items.filter((item) => {
-          if (item.productId) {
-            item.totalPrice = item.quantity * item.price;
-            total += item.totalPrice;
-
-            return true;
-          } else {
-            return false;
-          }
+        cart.items.forEach((cartItem) => {
+          const cartItemOffer = cartItem.productId.productOffer || 0;
+          const cartItemDiscount = (cartItemOffer * cartItem.price / 100) * cartItem.quantity;
+          totalOfferDiscount += cartItemDiscount;
+          grandTotal += cartItem.quantity * cartItem.price - cartItemDiscount;
         });
 
-        return res.json({ success: true, itemTotal: item.totalPrice ,grandTotal:total });
+        // Send back the updated totals for the front-end
+        return res.json({ 
+          success: true, 
+          itemTotal: item.totalPrice,
+          grandTotal, 
+          totalOfferDiscount 
+        });
       }
     }
 

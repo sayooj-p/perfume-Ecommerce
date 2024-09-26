@@ -1,5 +1,6 @@
 <%- include('../layouts/user/header.ejs') -%>
 
+
 <main class="main">
     <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
         <div class="container">
@@ -19,12 +20,35 @@
     <div class="page-content">
         <div class="checkout">
             <div class="container">
-                <div class="checkout-discount">
+                <div class="coupon-apply d-flex">
+                <div class="checkout-discount  ">
                     <form action="#">
-                        <input type="text" class="form-control" required id="checkout-discount-input">
-                        <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
+                        <div style="position: relative;">
+                            <input type="text" class="form-control" id="checkout-discount-input" placeholder="Enter coupon code" required style="width: 250px;">
+                            <span id="clear-coupon" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; color: rgb(107, 107, 107); display: none;">&times;</span>
+                        </div>
                     </form>
+                    
                 </div><!-- End .checkout-discount -->
+                <div class="apply ml-3">
+                    <a href="#"><button class="btn btn-primary ">Apply</button></a>
+                </div>
+            </div>
+            <div>
+                <p class="coupon-para pl-5 ml-2" style="color: #c96;">Available Coupons</p>
+                <% if (coupon.length > 0) { %>
+                    <% coupon.forEach(coupon => { %>
+                        <div class=" coupon-available pl-5 ml-4">
+                            <strong><%= coupon.name %></strong> - Minimum Order: ₹<%= coupon.minimumPrice %>, Offer Price: ₹<%= coupon.offerPrice %>
+                            (Exp on:<%= coupon.formattedExpireOn %>)
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                        <p class="not-available" style="font-size: small; color: red;">coupons are not available</p>
+                <% } %>
+            </div>
+            
+            
                 <form id="checkout-form" action="/order-success" method="POST">
                     <input type="hidden" name="cartId" value="<%= cartId %>">
                     <div class="row">
@@ -130,10 +154,16 @@
                                             <td>Free</td>
                                         </tr>
                                         <tr>
-                                            <td>Coupon applied:</td>
+                                            <td id="applied-coupon-name">No Coupon Applied</td>
                                             <td></td>
-                                            <td id="coupon-discount">0</td>
+                                            <td id="coupon-discount">₹0</td>
                                         </tr>
+                                        <tr>
+                                            <td id="offer-discount">Discount :</td>
+                                            <td></td>
+                                            <td id="discount-value"><%= totalOfferDiscount  %></td>
+                                        </tr>
+                                        
                                         <tr class="summary-total">
                                             <td>Total:</td>
                                             <td></td>
@@ -226,6 +256,11 @@
     const addressSelected = document.querySelector('input[name="addressId"]:checked');
     const paymentMethodSelected = document.querySelector('input[name="paymentMethod"]:checked');
     const totalPrice = parseFloat(document.querySelector('#grand-total').innerText.replace('₹', ''));
+    let couponCode = document.querySelector('#applied-coupon-name').innerText;
+    couponCode = couponCode === 'No Coupon Applied' ? null : couponCode;  // Handle 'No Coupon Applied' case
+    console.log("couponCode",couponCode);
+    
+
 
     // Check if no address is selected
     if (!addressSelected) {
@@ -246,67 +281,121 @@
         });
         return;
     }
+    
 
     // Handle Razorpay payment if 'online-payment' is selected
-    if (paymentMethodSelected.value === 'online-payment') {
-        try {
-            const response = await axios.post('/create-order', {
-                amount: Math.round(totalPrice * 100),  // Total amount in paisa
-                cartId: "<%= cartId %>"
-            });
-            
-            const data = response.data;
-            console.log(data);
-            
-            if (data.success) {
-                const options = {
-                    "key": data.razorpayKey,
-                    "amount": data.order.amount,
-                    "currency": "INR",
-                    "name": "PerfumParadise",
-                    "description": "Purchase Order",
-                    "order_id": data.order.id,
-                    "handler": function (response) {
-                        handlePaymentSuccess(
-                            response.razorpay_payment_id,
-                            response.razorpay_order_id,
-                            response.razorpay_signature
-                        );
-                    },
-                    "prefill": {
-                        name: data.user.name,
-                      
-                    },
-                    "theme": {
-                        "color": "#3399cc"
-                    }
-                };
+    // Handle Razorpay payment if 'online-payment' is selected
+// Handle Razorpay payment if 'online-payment' is selected
+if (paymentMethodSelected.value === 'online-payment') {
+    try {
+        const response = await axios.post('/create-order', {
+            amount: Math.round(totalPrice * 100),  // Total amount in paisa (this is before applying coupon in backend)
+            couponCode: couponCode === 'No Coupon Applied' ? null : couponCode,  // Pass the applied coupon code
+            cartId: "<%= cartId %>"
+        });
+        console.log("aaaaaaaaaaaaaaaaaaaaaaaaa",response);
+        const data = response.data;
+  
+        
 
-                const rzp1 = new Razorpay(options);
-                rzp1.on('payment.failed', function (response) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Payment Failed. Please try again.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
+        if (data.success) {
+            const options = {
+                "key": data.razorpayKey,
+                "amount": data.order.amount,  // Correct amount after coupon is applied
+                "currency": "INR",
+                "name": "PerfumParadise",
+                "description": "Purchase Order",
+                "order_id": data.order.id,
+                "handler": function (response) {
+                    handlePaymentSuccess(
+                        response.razorpay_payment_id,
+                        response.razorpay_order_id,
+                        response.razorpay_signature,
+                        couponCode
+                    );
+                },
+                "prefill": {
+                    name: data.user.name,
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+
+            const rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', async function (response) {
+                try {
+                    const addressId = document.querySelector('input[name="addressId"]:checked').value;
+                    let couponCode = document.querySelector('#applied-coupon-name').innerText;
+                    couponCode = couponCode === 'No Coupon Applied' ? null : couponCode;
+
+                    // Call the backend to place the order with payment pending status
+                    const placeOrderResponse = await axios.post('/order-success', {
+                    paymentId: response.error.metadata.payment_id, // Razorpay payment ID (failed)
+                    razorpayOrderId: response.error.metadata.order_id, // Razorpay order ID
+                    signature: null, // No signature available on failed payment
+                    addressId,
+                    paymentMethod: 'online-payment',
+                    couponCode,
+                    cartId: "<%= cartId %>",
+                    paymentStatus: 'failed' // Indicating the payment failure
                     });
+
+                    const orderId = placeOrderResponse.data.orderId;
+
+                    // Show a message to the user that the order was placed with payment pending
+                    Swal.fire({
+                    title: 'Payment Failed',
+                    text: 'Your order has been placed, but payment is pending. Please complete the payment from your orders page.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                    }).then(() => {
+                    window.location.href = `/order-success?orderId=${orderId}`;
+                    });
+                } catch (error) {
+                    Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to place order after payment failure. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                    });
+                }
                 });
-                rzp1.open();
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to initiate the payment. Please try again.',
-            });
+
+            rzp1.open();
         }
-    }else if (paymentMethodSelected.value === 'cash-on-delivery') {
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to initiate the payment. Please try again.',
+        });
+    }
+}
+
+else if (paymentMethodSelected.value === 'cash-on-delivery') {
         // Handle the Cash on Delivery (COD) scenario
         try {
+            if (totalPrice > 1000) {
+                
+                Swal.fire({
+                    title: 'Warning!',
+                    text: 'Cash on Delivery is not allowed for orders above ₹1000.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return; // Stop further execution
+            }
+
+
+
+           
             const response = await axios.post('/order-success', {
                 addressId: addressSelected.value,
                 paymentMethod: 'cash-on-delivery',
-                cartId: "<%= cartId %>"
+                couponCode: couponCode === 'No Coupon Applied' ? null : couponCode, 
+                cartId: "<%= cartId %>",
+                
             });
 
             const data = response.data;
@@ -340,26 +429,63 @@
         }
     }
         });
+
+
+        async function initiateRepayment(orderId, amount, razorpayOrderId) {
+  try {
+    // Call the backend to initiate repayment (fetching necessary Razorpay details)
+    const response = await axios.post('/initiate-repayment', { orderId });
+
+    if (response.data.success) {
+      const options = {
+        key: response.data.razorpayKey, // Razorpay key from backend
+        amount: Math.round(amount * 100), // Amount in paisa
+        currency: 'INR',
+        name: 'Your Store Name',
+        description: 'Repayment for Order ID: ' + orderId,
+        order_id: razorpayOrderId, // Existing Razorpay order ID
+        handler: async function (razorpayResponse) {
+          await handlePaymentSuccess(
+            razorpayResponse.razorpay_payment_id,
+            razorpayResponse.razorpay_order_id,
+            razorpayResponse.razorpay_signature,
+            orderId
+          );
+        },
+        theme: {
+          color: '#3399cc'
+        }
+      };
+
+      const rzp1 = new Razorpay(options);
+      rzp1.on('payment.failed', function (response) {
+        Swal.fire('Error', 'Payment failed. Please try again.', 'error');
+      });
+      rzp1.open();
+    }
+  } catch (error) {
+    console.error('Error initiating repayment:', error);
+    Swal.fire('Error', 'Failed to initiate repayment. Please try again.', 'error');
+  }
+}
   
 // Function to handle payment success
 async function handlePaymentSuccess(paymentId, razorpayOrderId, signature) {
     try {
-        // First, place the order
+        let couponCode = document.querySelector('#applied-coupon-name').innerText;
         const placeOrderResponse = await axios.post('/order-success', {
             paymentId,
             razorpayOrderId,
             signature,
             addressId: document.querySelector('input[name="addressId"]:checked').value,
             paymentMethod: 'online-payment',
-            cartId: "<%= cartId %>",
-            
+            couponCode: couponCode === 'No Coupon Applied' ? null : couponCode,  // Pass the applied coupon code
+            cartId: "<%= cartId %>"
         });
-        // console.log("12345",placeOrderResponse);
+        console.log('couponCode.....',placeOrderResponse);
         
 
         const orderId = placeOrderResponse.data.orderId;
-        // console.log("11",orderId);
-        
 
         // Then, verify the payment
         const verifyResponse = await axios.post('/verify-payment', {
@@ -368,8 +494,6 @@ async function handlePaymentSuccess(paymentId, razorpayOrderId, signature) {
             signature,
             orderId
         });
-        // console.log("444444444444444444",verifyResponse);
-        
 
         if (verifyResponse.data.success) {
             // If verification is successful, redirect to order success page
@@ -378,7 +502,7 @@ async function handlePaymentSuccess(paymentId, razorpayOrderId, signature) {
             Swal.fire('Payment Verification Failed', verifyResponse.data.message, 'error');
         }
     } catch (error) {
-        console.error('Error processing the payment:', error);
+        console.log('Error processing the payment:', error);
         Swal.fire({
             title: 'Error',
             text: 'An error occurred during payment processing. Please try again.',
@@ -387,6 +511,92 @@ async function handlePaymentSuccess(paymentId, razorpayOrderId, signature) {
         });
     }
 }
+
+// Handle coupon apply and remove logic
+document.querySelector('.apply button').addEventListener('click', async function (event) {
+    event.preventDefault();
+
+    const couponCode = document.querySelector('#checkout-discount-input').value;
+    
+    const cartTotal = parseFloat(document.querySelector('#grand-total').innerText.replace('₹', ''));
+    console.log(couponCode);
+    
+
+    if (!couponCode) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Coupon Entered',
+            text: 'Please enter a coupon code to apply.',
+        });
+        return;
+    }
+
+    try {
+        const response = await axios.post('/apply-coupon', { couponCode, cartTotal });
+
+        if (response.data.success) {
+            document.querySelector('#coupon-discount').innerText = `₹${response.data.discountAmount}`;
+            document.querySelector('#applied-coupon-name').innerText = response.data.couponCode;
+            document.querySelector('#clear-coupon').style.display = 'block';
+
+            const newTotal = cartTotal - response.data.discountAmount;
+            document.querySelector('#grand-total').innerText = `₹${newTotal}`;
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Coupon Applied',
+                text: response.data.message
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Coupon Error',
+                text: response.data.message
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to apply coupon. Please try again.'
+        });
+    }
+});
+
+// Handle coupon removal
+document.querySelector('#clear-coupon').addEventListener('click', function () {
+    // Display a confirmation dialog before removing the coupon
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to remove the applied coupon?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Remove the coupon after confirmation
+            const originalTotal = parseFloat("<%= total %>");
+            document.querySelector('#checkout-discount-input').value = '';
+            document.querySelector('#coupon-discount').innerText = '₹0';
+            document.querySelector('#applied-coupon-name').innerText = 'No Coupon Applied';
+            document.querySelector('#grand-total').innerText = `₹${originalTotal}`;
+            document.querySelector('#clear-coupon').style.display = 'none'; // Hide the close icon
+
+            // Show a success message after coupon removal
+            Swal.fire({
+                icon: 'success',
+                title: 'Coupon Removed',
+                text: 'Your coupon has been successfully removed and the total has been updated.',
+            }).then(()=>{
+                window.location.reload();
+            })
+        }
+    });
+});
+
 
 </script>
 

@@ -1,21 +1,5 @@
 <%- include('../layouts/user/header.ejs') -%>
-<style>
-    /* Default color of the wishlist icon */
-.btn-wishlist {
-    color: gray;
-}
 
-/* Color when the item is added to the wishlist */
-.btn-wishlist.added-to-wishlist {
-    color: red;
-}
-
-/* Optional: Color change on hover for better UX */
-.btn-wishlist:hover {
-    color: darkred;
-}
-
-</style>
 
 <main class="main">
     <div class="container-fluid">
@@ -149,14 +133,14 @@
                                  .product-main{
                                     margin-left: 15px;
                                       /* border: 1px solid white; */
-                                        border-radius: 10px; 
+                                        border-radius: 15px; 
                                         /* box-shadow: 4px 4px 4px #8d8d8d; */
                                         transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for smooth animation */
                                     }
 
                                 .product-main:hover {
                                         transform: scale(1.05); /* Zoom effect on hover */
-                                        box-shadow: 3px 3px 8px #8d8d8d; /* Slightly increase shadow for depth effect */
+                                      
                                     }
 
                                 </style>
@@ -169,6 +153,7 @@
                                             <a href="#" class="btn-product-icon btn-wishlist" data-product-id="<%= product._id %>">
                                                 <span>add to wishlist</span>
                                             </a>
+                                            
                                         </div>
                                         <div class="product-action">
                                             <% if (product.status === 'in Stock') { %>
@@ -404,29 +389,35 @@
 
     // Add to Wishlist functionality
   // Add to Wishlist functionality
-document.querySelectorAll('.btn-wishlist').forEach(button => {
+  document.querySelectorAll('.btn-wishlist').forEach(button => {
     button.addEventListener('click', function(event) {
         event.preventDefault();
         const productId = this.getAttribute('data-product-id');
         
         axios.post('/wishList', { productId })
             .then(response => {
-                // console.log('Response received:', response.data);  // Debugging line
-                
+                // Handle the response from the server
                 if (response.data.success) {
-                    console.log('Triggering SweetAlert');  // Debugging line
-
                     // SweetAlert for successful addition
                     Swal.fire({
-                        title: 'Added to Wishlist!',
+                       
                         text: 'The product has been successfully added to your wishlist.',
                         icon: 'success',
                         confirmButtonText: 'OK'
-                    });
+                    }).then(()=>{
+                        window.location.reload();
+                    })
 
-                    // Change the button text and styling to show it's added to wishlist
-                    // this.textContent = 'Added to Wishlist';
-                    // this.classList.add('added-to-wishlist');
+                   
+                   
+                } else {
+                    // SweetAlert for item already in wishlist
+                    Swal.fire({
+                        title: 'Already in Wishlist!',
+                        text: 'This product is already in your wishlist.',
+                        icon: 'info',
+                        confirmButtonText: 'OK'
+                    });
                 }
             })
             .catch(error => {
@@ -443,6 +434,8 @@ document.querySelectorAll('.btn-wishlist').forEach(button => {
     });
 });
 
+
 </script>
+
 
 <%- include('../layouts/user/footer.ejs') -%>

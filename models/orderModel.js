@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 const {v4:uuidv4} = require('uuid');
+const Coupon = require('./couponModel');
 const orderSchema = new Schema ({
     orderId:{
         type:String,
@@ -36,14 +37,14 @@ const orderSchema = new Schema ({
         required:true
 
     },
-    // discount:{
-    //     type:Number,
-    //     default:0
-    // },
-    // finalAmount:{
-    //     type:Number,
-    //     required:true
-    // },
+    discount:{
+        type:Number,
+        default:0
+    },
+    finalAmount:{
+        type:Number,
+        required:true
+    },
     address:{
         name:{
             type:String,
@@ -104,7 +105,7 @@ const orderSchema = new Schema ({
     },
     paymentStatus: {
         type: String,
-        enum: ['Paid', 'Pending'],
+        enum: ['Paid', 'Pending','failed'],
         default: 'Pending'
     },
     razorpay: {
@@ -112,10 +113,15 @@ const orderSchema = new Schema ({
         razorpayOrderId: { type: String },
         signature: { type: String }
     },
-    // couponApplied:{
-    //     type:Boolean,
-    //     default:false
-    // }
+    couponApplied:{
+        type:Boolean,
+        default:false
+    },
+    couponCode: {
+        type:String,
+        
+
+    }
 })
 const Order = mongoose.model('Order',orderSchema);
 module.exports  = Order;

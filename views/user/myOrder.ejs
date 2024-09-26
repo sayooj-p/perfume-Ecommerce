@@ -1,10 +1,7 @@
 <%- include('../layouts/user/header.ejs') -%>
 
 <main class="main">
-  <div
-    class="page-header text-center"
-    style="background-image: url('/assets/images/page-header-bg.jpg')"
-  >
+  <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
     <div class="container">
       <h1 class="page-title">My Orders</h1>
     </div>
@@ -18,111 +15,90 @@
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="/">Home</a></li>
               <li class="breadcrumb-item"><a href="/">Profile</a></li>
-              <li class="breadcrumb-item active" aria-current="page">
-                My Order
-              </li>
+              <li class="breadcrumb-item active" aria-current="page">My Order</li>
             </ol>
           </div>
-          <!-- End .container -->
         </nav>
-        <% if (orders.length > 0) { %> <% orders.forEach(order => { %>
-        <div class=" col-sm-2 col-md-6 col-lg-12 mb-4 pt-5">
-          <div class="card h-100 shadow-sm ">
-            <div class="card-header bg-gray text-white">
-              <h5 class="mb-0">Order ID: <%= order.orderId %></h5>
-            </div>
-            <div class="card-body pt-3 d-flex justify-content-around">
-              <!-- Order Summary -->
-               <div><p>
-                <strong>Order Date:</strong> <%= new
-                Date(order.createdOn).toLocaleDateString() %>
-              </p>
-              <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-              <p>
-                <strong>Status:</strong> 
-                <span 
-                  style=" font-weight: bolder; color: <%= order.status === 'Cancelled' ? 'red' : 'green' %>">
-                  <%= order.status %>
-                </span>
-              </p>
-              <% if (order.paymentMethod === 'online-payment') { %>
-                <p><strong>payment Status:</strong> <%= order.paymentStatus %></p>
-              <% } %>
-             
 
-              </div>
-              <div class="order-product-detail pt-1">
-              <% order.orderItems.forEach(item => { %>
-              <div class="order-item mb-2 d-flex">
-                <% if (item.product) { %>
-
-                <div>
-                  
-                  <p class="mb-0"><strong>Quantity:</strong> <%= item.quantity %></p>
-                  <p class="mb-0"><strong>Price:</strong> ₹<%= item.price %></p>
+        <% if (orders.length > 0) { %>
+          <% orders.forEach(order => { %>
+            <div class="col-sm-2 col-md-6 col-lg-12 mb-4 pt-5">
+              <div class="card h-100 shadow-sm ">
+                <div class="card-header bg-gray text-white">
+                  <h5 class="mb-0">Order ID: <%= order.orderId %></h5>
                 </div>
-                <% } %>
-              </div>
-              <% }) %>
-              </div>
-              <div class="order-total">
+                <div class="card-body pt-3 d-flex justify-content-around">
+                  <!-- Order Summary -->
+                  <div>
+                    <p><strong>Order Date:</strong> <%= new Date(order.createdOn).toLocaleDateString() %></p>
+                    <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                    <p>
+                      <strong>Status:</strong>
+                      <span style="font-weight: bolder; color: <%= order.status === 'Cancelled' ? 'red' : 'green' %>">
+                        <%= order.status %>
+                      </span>
+                    </p>
+                    <% if (order.paymentMethod === 'online-payment') { %>
+                      <p><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
+                    <% } %>
+                  </div>
 
-              <!-- Order Total -->
-              <h5 class="mt-3">
-                Total: ₹<%= order.orderItems.reduce((total, item) => total +
-                (item.quantity * item.price), 0) %>
-              </h5>
-            </div>
-            </div>
+                  <div class="order-product-detail pt-1">
+                    <% order.orderItems.forEach(item => { %>
+                      <div class="order-item mb-2 d-flex">
+                        <% if (item.product) { %>
+                          <div>
+                            <p class="mb-0"><strong>Quantity:</strong> <%= item.quantity %></p>
+                            <p class="mb-0"><strong>Price:</strong> ₹<%= item.price %></p>
+                          </div>
+                        <% } %>
+                      </div>
+                    <% }) %>
+                  </div>
 
-            <!-- Card Footer with Action Buttons -->
-            <div class="card-footer text-center">
-              <a href="/view-orderDetails/<%= order._id %>" class="btn btn-info"
-                >View Details</a
-              >
-              <% if (order.status === 'Pending' || order.status ===
-              'Processing') { %>
-              <button
-                class="btn btn-danger btn-cancel-order"
-                onclick="cancelOrder('<%= order._id %>')"
-              >
-                Cancel Order
-              </button>
-              <% } %>
+                  <div class="order-total">
+                    <h5 class="mt-3">
+                      Total: ₹<%= order.orderItems.reduce((total, item) => total + (item.quantity * item.price), 0) %>
+                    </h5>
+                  </div>
+                </div>
+
+                <!-- Card Footer with Action Buttons -->
+                <div class="card-footer text-center">
+                  <a href="/view-orderDetails/<%= order._id %>" class="btn btn-info">View Details</a>
+                  <% if (order.status === 'Pending' || order.status === 'Processing') { %>
+                    <button class="btn btn-danger btn-cancel-order" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
+                  <% } %>
+
+                  <% if (order.status === 'Pending' && order.paymentStatus === 'Pending') { %>
+                    <button class="btn btn-primary" onclick="initiateRepayment('<%= order._id %>', '<%= order.finalAmount %>', '<%= order.razorpayOrderId %>')">
+                      Repayment
+                    </button>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">You have no orders yet.</div>
+            <div class="order-now" style="display: flex; justify-content: center;">
+              <img src='assets/images/order-now.png' alt="order-now">
+            </div>
+            <div class="shop-btn" style="display: flex; justify-content: center; padding: 29px 0px 8px 4px;">
+              <a href="/shop"><button class="btn btn-primary">Go to Shop Page</button></a>
             </div>
           </div>
-        </div>
-        <% }) %> <% } else { %>
-        <div class="col-12">
-          <div class="alert alert-info text-center" role="alert">
-            You have no orders yet.
-          </div>   
-      
-          <div class="order-now " style="display: flex; justify-content: center;" >
-            <img src= 'assets/images/order-now.png' alt="order-now">
-            </div>
-            <div
-            class="shop-btn"
-            style="
-              display: flex;
-              justify-content: center;
-              padding: 29px 0px 8px 4px;
-            "
-          >
-            <a href="/shop"
-              ><button class="btn btn-primary">Go to Shop Page</button></a>
-          </div>
-
-   
-        </div>
         <% } %>
       </div>
     </div>
   </div>
 </main>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
   async function cancelOrder(orderId) {
     const confirmResult = await Swal.fire({
@@ -147,12 +123,75 @@
         }
       } catch (error) {
         console.error("Error:", error);
-        Swal.fire(
-          "Error!",
-          "Failed to cancel the order. Please try again.",
-          "error"
-        );
+        Swal.fire("Error!", "Failed to cancel the order. Please try again.", "error");
       }
+    }
+  }
+
+  async function initiateRepayment(orderId, amount, razorpayOrderId) {
+  try {
+    const response = await axios.post('/initiate-repayment', { orderId });
+
+    if (response.data.success) {
+      const options = {
+        key: response.data.razorpayKey, // Razorpay key from backend
+        amount: Math.round(amount * 100), // Amount in paisa
+        currency: 'INR',
+        name: 'Your Store Name',
+        description: 'Repayment for Order ID: ' + orderId,
+        order_id: razorpayOrderId, // Existing Razorpay order ID
+        handler: async function (razorpayResponse) {
+          // Log Razorpay response for debugging
+          console.log('Razorpay response:', razorpayResponse);
+
+          // Send the payment details to the backend for verification
+          await handleRePaymentSuccess(
+            razorpayResponse.razorpay_payment_id,
+            razorpayResponse.razorpay_order_id,
+            razorpayResponse.razorpay_signature,
+            orderId
+          );
+        },
+        theme: {
+          color: '#3399cc'
+        }
+      };
+
+      const rzp1 = new Razorpay(options);
+      rzp1.on('payment.failed', function (response) {
+        Swal.fire('Error', 'Payment failed. Please try again.', 'error');
+      });
+      rzp1.open();
+    }
+  } catch (error) {
+    console.error('Error initiating repayment:', error);
+    Swal.fire('Error', 'Failed to initiate repayment. Please try again.', 'error');
+  }
+}
+
+
+
+  async function handleRePaymentSuccess(paymentId, razorpayOrderId, signature, orderId) {
+    try {
+      const response = await axios.post('/verify-repayment', {
+        paymentId,
+        razorpayOrderId,
+        signature,
+        orderId
+      });
+      console.log("response",response);
+      
+
+      if (response.data.success) {
+        Swal.fire('Success', 'Payment completed successfully!', 'success').then(() => {
+          window.location.reload(); // Reload page to update order status
+        });
+      } else {
+        Swal.fire('Error', response.data.message, 'error');
+      }
+    } catch (error) {
+      console.error('Error verifying repayment:', error);
+      Swal.fire('Error', 'Failed to verify payment. Please try again.', 'error');
     }
   }
 </script>

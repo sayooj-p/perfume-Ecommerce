@@ -20,7 +20,7 @@
 
     .product-main:hover {
              transform: scale(1.05); /* Zoom effect on hover */
-            box-shadow: 3px 3px 8px #8d8d8d; /* Slightly increase shadow for depth effect */
+           
         }
 
                       
@@ -86,11 +86,11 @@
                         <div class="row justify-content-center">
                             <% products.forEach(product => { %>
                                 <% if (product.isBlocked === false) { %>
-                                    <div class="product-main col-md-4 col-lg-4">
+                                    <div class="product-main col-md-4 col-lg-3 ">
                                         <div class="product product-7 text-center">
                                             <figure class="product-media">
                                                 <a href="/productdetails/<%= product._id %>">
-                                                    <img src="<%= product.productImage[0] %>" alt="Product image" class="product-image">
+                                                    <img src="<%= product.productImage[0] %>" alt="Product image" class="product-image" style="width:360px; height: 273px; object-fit: cover;">
                                                 </a>
                                                 <div class="product-action-vertical">
                                                     <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
@@ -229,10 +229,10 @@
             searchForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const query = searchForm.querySelector('input[name="search"]').value;
-                if (query.length >= 3) {
+                if (query.length >= 3 ) {
                     searchForm.submit();
                 } else {
-                    // alert('Please enter at least 3 characters.');
+                   
                     Swal.fire({
                 icon: 'warning',
                 title: 'Please enter at least 3 characters.',
@@ -257,9 +257,15 @@
             });
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('search-input');
     const clearSearchButton = document.getElementById('clear-search');
+    const searchForm = document.getElementById('search-form');
+
+    // Show the close button if there's a search value
+    if (searchInput.value.length > 0) {
+        clearSearchButton.style.display = 'block';
+    }
 
     // Show/Hide the close button based on the input's value
     searchInput.addEventListener('input', function () {
@@ -270,27 +276,32 @@
         }
     });
 
-    // Clear the search input and hide the close button when clicked
+    // Clear the search input and reset the page when the close button is clicked
     clearSearchButton.addEventListener('click', function () {
-        searchInput.value = '';
+        searchInput.value = '';  // Clear the input field
         clearSearchButton.style.display = 'none';  // Hide the close button
 
-        // Reload the page or reset the search (optional)
+        // Reset the URL by removing the search query parameter
         const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.delete('search');  // Remove the search query parameter from the URL
-        window.location.href = currentUrl.toString();  // Reload the page
+        currentUrl.searchParams.delete('search');  // Remove the search query param
+        window.location.href = currentUrl.toString();  // Reload the page without the search filter
     });
 
     // Search form submission with validation
-    const searchForm = document.getElementById('search-form');
     searchForm.addEventListener('submit', function (e) {
         const query = searchInput.value;
         if (query.length < 3) {
-            e.preventDefault();
-           
+            e.preventDefault();  // Prevent submission if query is too short
+            Swal.fire({
+                icon: 'warning',
+                title: 'Please enter at least 3 characters.',
+            });
+        } else {
+            searchForm.submit();  // Allow form submission if query is valid
         }
     });
 });
+
 
 
     </script>

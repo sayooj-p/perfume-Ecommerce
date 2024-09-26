@@ -32,23 +32,31 @@ const loadAddCategory = (req, res) => {
 
 const addCategory = async (req, res) => {
     try {
-        const { name } = req.body;
-        const existingCategory = await Category.findOne({ name });
-        if (existingCategory) {
-            return res.status(400).json({ error: 'Category already exists' });
-        }
-        const newCategory = new Category({
-            name
-           
-        });
-        await newCategory.save();
-        return res.json({ message: "Category added successfully" });
+      const { name } = req.body;
+  
+      // Use case-insensitive search for category name
+      const existingCategory = await Category.findOne({
+        name: { $regex: new RegExp(`^${name}$`, 'i') }  
+      });
+  
+      if (existingCategory) {
+        return res.status(400).json({ error: 'Category already exists' });
+      }
+  
+      // Save the new category with plain string `name`
+      const newCategory = new Category({
+        name: name 
+      });
+  
+      await newCategory.save();
+      return res.json({ message: "Category added successfully" });
+  
     } catch (error) {
-        console.log("Error in adding category:", error);
-        return res.status(500).json({ error: 'Internal server error' });
+      console.error("Error in adding category:", error);
+      return res.status(500).json({ error: 'Internal server error' });
     }
-};
-
+  };
+  
 const getListCategory = async (req, res) => {
     try {
         let id = req.query.id;
@@ -107,16 +115,16 @@ const getUnListCategory = async (req, res) => {
     }
 };
 
-const addProductOffer =  async (req,res)=>{
+const addCategoryOffer =  async (req,res)=>{
     try {
         const percentage = parseInt(req.body.percentage);
         const categoryId = req.body.categoryId;
         const findCategory = await Category.findById(categoryId);
-        if(!findCategory) {
-            return res.status(404).json({status:false, message:"Category not found"});
-        }
+        // if(!findCategory) {
+        //     return res.status(404).json({status:false, message:"Category not found"});
+        // }
         const products = await Product.find({category:findCategory._id});
-        const hasProductOffer = products.some((product)=>product.productOffer>percentage);
+        const hasProductOffer = products.some((product)=>product.productOffer>=percentage);
         if(hasProductOffer) {
             return res.json({status:false, message:'products within this category have product  Offers'});
         }
@@ -137,7 +145,7 @@ const addProductOffer =  async (req,res)=>{
     }
 }
 
-const removeProductOffer = async(req,res)=>{
+const removeCategoryOffer = async(req,res)=>{
     try {
         const categoryId = req.body.categoryId;
         const category = await Category.findById(categoryId);
@@ -174,6 +182,6 @@ module.exports = {
     getUnListCategory,
     editCategory,
     updateCategory,
-    addProductOffer,
-    removeProductOffer
+    addCategoryOffer,
+    removeCategoryOffer
 };

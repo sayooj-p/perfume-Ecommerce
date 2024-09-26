@@ -6,6 +6,7 @@ const productController = require('../controllers/admin/productController');
 const categoryController = require('../controllers/admin/categoryController');
 const orderController = require('../controllers/admin/orderController');
 const couponController = require('../controllers/admin/couponController');
+const sailesReportController = require('../controllers/admin/sailesReportController');
 const adminAuth = require("../middlware/adminAuth");
 const upload = require('../middlware/multer')
 const session = require('express-session');
@@ -64,8 +65,8 @@ admin_route.get('/listCategory', adminAuth, categoryController.getListCategory);
 admin_route.get('/unlistCategory', adminAuth, categoryController.getUnListCategory);
 admin_route.get('/edit-category', adminAuth, categoryController.editCategory);
 admin_route.post('/edit-category/:id', adminAuth, categoryController.updateCategory);
-admin_route.post('/addCategoryOffer',adminAuth,categoryController.addProductOffer);
-admin_route.post('/removeCategoryOffer',adminAuth,categoryController.removeProductOffer);
+admin_route.post('/addCategoryOffer',adminAuth,categoryController.addCategoryOffer);
+admin_route.post('/removeCategoryOffer',adminAuth,categoryController.removeCategoryOffer);
 
 //order managment
 
@@ -79,6 +80,13 @@ admin_route.get('/add-coupon', adminAuth, couponController.loadAddCoupon);
 admin_route.post('/add-coupon', adminAuth, couponController.addCoupon);
 admin_route.get('/listCoupon', adminAuth, couponController.listCoupon);
 admin_route.get('/unlistCoupon', adminAuth, couponController.unlistCoupon);
+
+
+//sailes report
+
+admin_route.get('/getsalepage',adminAuth,sailesReportController.getSalesPage);
+admin_route.get('/excel',adminAuth, sailesReportController.downloadSalesReportExcel);
+admin_route.get('/pdf',adminAuth, sailesReportController.downloadSalesReportPDF);
 
 
 

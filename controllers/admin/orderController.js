@@ -90,10 +90,11 @@ const updateOrderStatus = async (req, res) => {
       res.status(500).json({ success: false, message: 'An error occurred while updating the order status.' });
     }
   };
-
+  
 
 module.exports = {
     getOrder,
     viewOrder,
-    updateOrderStatus
+    updateOrderStatus,
+    
 }

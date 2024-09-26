@@ -1,9 +1,11 @@
 const path = require('path');
+const nocache = require("nocache")
 const mongoose = require("mongoose");
 const express = require("express");
 const cartCountMiddleware = require('./middlware/cartCount');
 const wishListCountMiddleware = require('./middlware/wishListCount');
 const app = express();
+app.use(nocache());
 require('dotenv').config();
 const session = require('express-session');
 

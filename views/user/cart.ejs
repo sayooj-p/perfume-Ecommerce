@@ -184,11 +184,20 @@
                     <td></td>
                     <td>Free</td>
                   </tr>
+                  <tr>
+                    <td>Discount:</td>
+                    <td></td>
+                    <td 
+                    class="total-discount"
+                    id="total-discount">₹<%= totalOfferDiscount %>
+                  </td>
+                  </tr>
                   <tr class="summary-total">
                     <td>Total:</td>
                     <td></td>
                     <td id="grand-total">₹<%= total %></td>
                   </tr>
+                  
                   <!-- End .summary-total -->
                 </tbody>
               </table>
@@ -274,34 +283,42 @@
     }
 }
 
-  // Function to update the cart item
-  async function updateCartItem(productId, quantity) {
-    try {
-      const response = await axios.post("/update-cart-item", {
-        productId: productId,
-        quantity: quantity,
-      });
+ 
+// Function to update the cart item
+async function updateCartItem(productId, quantity) {
+  try {
+    const response = await axios.post("/update-cart-item", {
+      productId: productId,
+      quantity: quantity,
+    });
 
-      if (response.data.success) {
-        console.log("Cart updated successfully");
-        const itemTotal=document.getElementById(`subtotal-${productId}`)
-        const itemQuantity=document.getElementById(`summary-qty-${productId}`)
-        const itemTotal2=document.getElementById(`summary-subtotal-${productId}`)
-        const grandTotal=document.getElementById('grand-total')
-        const totalPrice=response.data.itemTotal
-        itemTotal.innerHTML=totalPrice
-        itemTotal2.innerHTML=totalPrice
-        itemQuantity.innerHTML=quantity
-        grandTotal.innerHTML=response.data.grandTotal
+    if (response.data.success) {
+      // Update the item total price in the cart
+      const itemTotal = document.getElementById(`subtotal-${productId}`);
+      const summaryQty = document.getElementById(`summary-qty-${productId}`);
+      const summarySubtotal = document.getElementById(`summary-subtotal-${productId}`);
+      const grandTotal = document.getElementById('grand-total');
+      const discountTotal = document.getElementById('total-discount'); // Discount element
 
+      // Update the individual item total
+      itemTotal.innerHTML = `₹${response.data.itemTotal}`;
+      summarySubtotal.innerHTML = `₹${response.data.itemTotal}`;
+      summaryQty.innerHTML = quantity;
 
-      } else {
-        console.error("Failed to update cart");
-      }
-    } catch (error) {
-      console.error("Error updating cart:", error);
+      // Update the grand total and discount
+      grandTotal.innerHTML = `₹${response.data.grandTotal}`;
+      discountTotal.innerHTML = `₹${response.data.totalOfferDiscount}`;
+
+      // Log success or show alert
+      console.log("Cart updated successfully");
+    } else {
+      console.error("Failed to update cart");
     }
+  } catch (error) {
+    console.error("Error updating cart:", error);
   }
+}
+
 </script>
 
 

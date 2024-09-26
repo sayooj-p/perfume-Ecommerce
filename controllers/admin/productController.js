@@ -184,9 +184,9 @@ const addProductOffer = async (req, res) => {
         // Find the product by its ID
         const findProduct = await Product.findOne({ _id: productId }); // Fix: Corrected syntax for findOne
 
-        if (!findProduct) {
-            return res.json({ status: false, message: 'Product not found' });
-        }
+        // if (!findProduct) {
+        //     return res.json({ status: false, message: 'Product not found' });
+        // }
 
         const findCategory = await Category.findOne({ _id: findProduct.category });
         
@@ -196,7 +196,7 @@ const addProductOffer = async (req, res) => {
         }
 
         // Update the price with the offer percentage
-        findProduct.price = findProduct.regularPrice - Math.floor(findProduct.regularPrice * (percentage / 100));
+        findProduct.price = findProduct.price - Math.floor(findProduct.regularPrice * (percentage / 100));
         findProduct.productOffer = percentage; // Update the product's offer percentage
         await findProduct.save();
 

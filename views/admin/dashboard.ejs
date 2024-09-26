@@ -1,6 +1,14 @@
 <%- include('../layouts/admin/header.ejs') -%>
 
-<body class="body">
+<style>
+    .chart {
+        padding: 60px 0px;
+    }
+
+    .statuses h4 {
+        padding-top: 5px;
+    }
+</style>
 
     
                     <div class="main-content">
@@ -8,662 +16,243 @@
                         <div class="main-content-inner">
                             <!-- main-content-wrap -->
                             <div class="main-content-wrap">
-                                <div class="tf-section-2 mb-30">
-                                    <div class="flex gap20 flex-wrap-mobile">
-                                        <div class="w-half">
-                                            <!-- chart-default -->
-                                            <div class="wg-chart-default mb-20">
-                                                <div class="flex items-center justify-between">
-                                                    <div class="flex items-center gap14">
-                                                        <div class="image">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="52" viewBox="0 0 48 52" fill="none">
-                                                                <path opacity="0.08" d="M19.1086 2.12943C22.2027 0.343099 26.0146 0.343099 29.1086 2.12943L42.4913 9.85592C45.5853 11.6423 47.4913 14.9435 47.4913 18.5162V33.9692C47.4913 37.5418 45.5853 40.8431 42.4913 42.6294L29.1086 50.3559C26.0146 52.1423 22.2027 52.1423 19.1086 50.3559L5.72596 42.6294C2.63194 40.8431 0.725956 37.5418 0.725956 33.9692V18.5162C0.725956 14.9435 2.63195 11.6423 5.72596 9.85592L19.1086 2.12943Z" fill="url(#paint0_linear_53_110)"/>
-                                                                <defs>
-                                                                  <linearGradient id="paint0_linear_53_110" x1="-43.532" y1="-34.3465" x2="37.6769" y2="43.9447" gradientUnits="userSpaceOnUse">
-                                                                    <stop stop-color="#92BCFF"/>
-                                                                    <stop offset="1" stop-color="#2377FC"/>
-                                                                  </linearGradient>
-                                                                </defs>
-                                                            </svg>
-                                                            <i class="icon-shopping-bag"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text mb-2">Total Sales</div>
-                                                            <h4>34,945</h4>
-                                                        </div>
-                                                    </div>
-                                                    <div class="box-icon-trending up">
-                                                        <i class="icon-trending-up"></i>
-                                                        <div class="body-title number">1.56%</div>
-                                                    </div>
-                                                </div>
-                                                <div class="wrap-chart">
-                                                    <div id="line-chart-1"></div>
-                                                </div>
+                                <div class="content-header d-flex shadow justify-content-between">
+                                    <header class=" d-flex  justify-content-between">
+                                        <h2 class="content-title card-title">Dashboard</h2>
+                                    </header>
+                                    <!-- Filter by Date Range -->
+                                    <div class="row my-4">
+                                        <form action="/admin" method="GET" class="d-flex align-items-center">
+                                            <!-- Custom Date Range -->
+                                            <div id="custom-date" class=" align-items-center mt-2 d-none">
+                                                <label for="startDate" class="me-2">From:</label>
+                                                <input type="date" name="startDate" id="startDate" value="<%=startDate ? new Date(startDate).toLocaleDateString('en-CA') :'' %>" class="form-control me-3 rounded-0 border">
+                                                <label for="endDate" class="me-2">To:</label>
+                                                <input type="date" name="endDate" id="endDate" value="<%=endDate ? new Date(endDate).toLocaleDateString('en-CA') : '' %>" class="form-control me-3 rounded-0 border">
                                             </div>
-                                            <!-- /chart-default -->
-                                            <!-- chart-default -->
-                                            <div class="wg-chart-default mb-20">
-                                                <div class="flex items-center justify-between">
-                                                    <div class="flex items-center gap14">
-                                                        <div class="image">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="52" viewBox="0 0 48 52" fill="none">
-                                                                <path opacity="0.08" d="M19.1086 2.12943C22.2027 0.343099 26.0146 0.343099 29.1086 2.12943L42.4913 9.85592C45.5853 11.6423 47.4913 14.9435 47.4913 18.5162V33.9692C47.4913 37.5418 45.5853 40.8431 42.4913 42.6294L29.1086 50.3559C26.0146 52.1423 22.2027 52.1423 19.1086 50.3559L5.72596 42.6294C2.63194 40.8431 0.725956 37.5418 0.725956 33.9692V18.5162C0.725956 14.9435 2.63195 11.6423 5.72596 9.85592L19.1086 2.12943Z" fill="url(#paint0_linear_53_110)"/>
-                                                                <defs>
-                                                                  <linearGradient id="paint0_linear_53_110" x1="-43.532" y1="-34.3465" x2="37.6769" y2="43.9447" gradientUnits="userSpaceOnUse">
-                                                                    <stop stop-color="#92BCFF"/>
-                                                                    <stop offset="1" stop-color="#2377FC"/>
-                                                                  </linearGradient>
-                                                                </defs>
-                                                            </svg>
-                                                            <i class="icon-dollar-sign"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text mb-2">Total Income</div>
-                                                            <h4>$37,802</h4>
-                                                        </div>
-                                                    </div>
-                                                    <div class="box-icon-trending down">
-                                                        <i class="icon-trending-down"></i>
-                                                        <div class="body-title number">1.56%</div>
-                                                    </div>
-                                                </div>
-                                                <div class="wrap-chart">
-                                                    <div id="line-chart-2"></div>
-                                                </div>
-                                            </div>
-                                            <!-- /chart-default -->
-                                            <!-- chart-default -->
-                                            <div class="wg-chart-default mb-20">
-                                                <div class="flex items-center justify-between">
-                                                    <div class="flex items-center gap14">
-                                                        <div class="image">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="52" viewBox="0 0 48 52" fill="none">
-                                                                <path opacity="0.08" d="M19.1086 2.12943C22.2027 0.343099 26.0146 0.343099 29.1086 2.12943L42.4913 9.85592C45.5853 11.6423 47.4913 14.9435 47.4913 18.5162V33.9692C47.4913 37.5418 45.5853 40.8431 42.4913 42.6294L29.1086 50.3559C26.0146 52.1423 22.2027 52.1423 19.1086 50.3559L5.72596 42.6294C2.63194 40.8431 0.725956 37.5418 0.725956 33.9692V18.5162C0.725956 14.9435 2.63195 11.6423 5.72596 9.85592L19.1086 2.12943Z" fill="url(#paint0_linear_53_110)"/>
-                                                                <defs>
-                                                                  <linearGradient id="paint0_linear_53_110" x1="-43.532" y1="-34.3465" x2="37.6769" y2="43.9447" gradientUnits="userSpaceOnUse">
-                                                                    <stop stop-color="#92BCFF"/>
-                                                                    <stop offset="1" stop-color="#2377FC"/>
-                                                                  </linearGradient>
-                                                                </defs>
-                                                            </svg>
-                                                            <i class="icon-file"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text mb-2">Orders Paid</div>
-                                                            <h4>34,945</h4>
-                                                        </div>
-                                                    </div>
-                                                    <div class="box-icon-trending">
-                                                        <i class="icon-trending-up"></i>
-                                                        <div class="body-title number">0.00%</div>
-                                                    </div>
-                                                </div>
-                                                <div class="wrap-chart">
-                                                    <div id="line-chart-3"></div>
-                                                </div>
-                                            </div>
-                                            <!-- /chart-default -->
-                                            <!-- chart-default -->
-                                            <div class="wg-chart-default">
-                                                <div class="flex items-center justify-between">
-                                                    <div class="flex items-center gap14">
-                                                        <div class="image">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="52" viewBox="0 0 48 52" fill="none">
-                                                                <path opacity="0.08" d="M19.1086 2.12943C22.2027 0.343099 26.0146 0.343099 29.1086 2.12943L42.4913 9.85592C45.5853 11.6423 47.4913 14.9435 47.4913 18.5162V33.9692C47.4913 37.5418 45.5853 40.8431 42.4913 42.6294L29.1086 50.3559C26.0146 52.1423 22.2027 52.1423 19.1086 50.3559L5.72596 42.6294C2.63194 40.8431 0.725956 37.5418 0.725956 33.9692V18.5162C0.725956 14.9435 2.63195 11.6423 5.72596 9.85592L19.1086 2.12943Z" fill="url(#paint0_linear_53_110)"/>
-                                                                <defs>
-                                                                  <linearGradient id="paint0_linear_53_110" x1="-43.532" y1="-34.3465" x2="37.6769" y2="43.9447" gradientUnits="userSpaceOnUse">
-                                                                    <stop stop-color="#92BCFF"/>
-                                                                    <stop offset="1" stop-color="#2377FC"/>
-                                                                  </linearGradient>
-                                                                </defs>
-                                                            </svg>
-                                                            <i class="icon-users"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text mb-2">Total Visitor</div>
-                                                            <h4>34,945</h4>
-                                                        </div>
-                                                    </div>
-                                                    <div class="box-icon-trending up">
-                                                        <i class="icon-trending-up"></i>
-                                                        <div class="body-title number">1.56%</div>
-                                                    </div>
-                                                </div>
-                                                <div class="wrap-chart">
-                                                    <div id="line-chart-4"></div>
-                                                </div>
-                                            </div>
-                                            <!-- /chart-default -->
-                                        </div>
-                                        <!-- category -->
-                                        <div class="wg-box w-half">
-                                            <div class="flex items-center justify-between">
-                                                <h5>Sale by category</h5>
-                                                <div class="dropdown default">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                       <span class="icon-more"><i class="icon-more-horizontal"></i></span>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li>  
-                                                            <a href="javascript:void(0);">This Week</a>
-                                                        </li>
-                                                        <li>  
-                                                            <a href="javascript:void(0);">Last Week</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="flex gap10 justify-between flex-wrap">
-                                                <div>
-                                                    <div class="text-tiny mb-2">Total Mar 20, 2023</div>
-                                                    <div class="flex items-center gap10">
-                                                        <h4>$37,802</h4>
-                                                        <div class="box-icon-trending up">
-                                                            <i class="icon-trending-up"></i>
-                                                            <div class="body-title number">0.56%</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="dropdown default style-box">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <a href="product-list.html" class="view-all">Week<i class="icon-chevron-down"></i></a>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>  
-                                                            <a href="javascript:void(0);">Month</a>
-                                                        </li>
-                                                        <li>  
-                                                            <a href="javascript:void(0);">Year</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div id="morris-donut-1" class="text-center"></div>
-                                            <div class="flex gap20">
-                                                <div class="block-legend style-1 w-full">
-                                                    <div class="dot t1"></div>
-                                                    <div class="text-tiny">Men Fashion</div>
-                                                </div>
-                                                <div class="block-legend style-1 w-full">
-                                                    <div class="dot t2"></div>
-                                                    <div class="text-tiny">Men Fashion</div>
-                                                </div>
-                                                <div class="block-legend style-1 w-full">
-                                                    <div class="dot t3"></div>
-                                                    <div class="text-tiny">Men Fashion</div>
-                                                </div>
-                                            </div>
-                                            <div class="flex gap20">
-                                                <div class="block-legend style-1 w-full">
-                                                    <div class="dot t4"></div>
-                                                    <div class="text-tiny">Accessory</div>
-                                                </div>
-                                                <div class="block-legend style-1 w-full">
-                                                    <div class="dot t5"></div>
-                                                    <div class="text-tiny">Sport shoes</div>
-                                                </div>
-                                                <div class="block-legend style-1 w-full">
-                                                    <div class="dot t6"></div>
-                                                    <div class="text-tiny">Underwear</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- /category -->
+                                            <select name="filterType" class="form-select me-3 rounded-0 border" style="width: 200px; height: 45px;">
+                                                <option value="daily" <%= filterType === 'daily' ? 'selected' : '' %> >Daily</option>
+                                                <option value="weekly" <%= filterType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                                                <option value="yearly" <%= filterType === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                                                <option value="custom" <%= filterType === 'custom' ? 'selected' : '' %>>Custom Date</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-success text-light rounded-0 border me-4">Filter</button>
+                                        </form>
                                     </div>
-                                    <!-- earnings -->
-                                    <div class="wg-box">
-                                        <div class="flex items-center justify-between">
-                                            <h5>Earnings revenue</h5>
-                                            <div class="dropdown default">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                   <span class="icon-more"><i class="icon-more-horizontal"></i></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li>  
-                                                        <a href="javascript:void(0);">This Week</a>
-                                                    </li>
-                                                    <li>  
-                                                        <a href="javascript:void(0);">Last Week</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="flex flex-wrap gap40">
-                                            <div>
-                                                <div class="mb-2">
-                                                    <div class="block-legend">
-                                                        <div class="dot t1"></div>
-                                                        <div class="text-tiny">Revenue</div>
-                                                    </div>
-                                                </div>
-                                                <div class="flex items-center gap10">
-                                                    <h4>$37,802</h4>
-                                                    <div class="box-icon-trending up">
-                                                        <i class="icon-trending-up"></i>
-                                                        <div class="body-title number">0.56%</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="mb-2">
-                                                    <div class="block-legend">
-                                                        <div class="dot t2"></div>
-                                                        <div class="text-tiny">Order</div>
-                                                    </div>
-                                                </div>
-                                                <div class="flex items-center gap10">
-                                                    <h4>$28,305</h4>
-                                                    <div class="box-icon-trending up">
-                                                        <i class="icon-trending-up"></i>
-                                                        <div class="body-title number">0.56%</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="line-chart-8"></div>
-                                    </div>
-                                    <!-- /earnings -->
                                 </div>
-                                <div class="tf-section mb-30">
-                                    <!-- orders -->
-                                    <div class="wg-box">
-                                        <div class="flex items-center justify-between">
-                                            <h5>Recent orders</h5>
-                                            <div class="dropdown default">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <span class="view-all">View all<i class="icon-chevron-down"></i></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li>  
-                                                        <a href="javascript:void(0);">3 days</a>
-                                                    </li>
-                                                    <li>  
-                                                        <a href="javascript:void(0);">7 days</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                        
+                                <!-- Charts Section -->
+                                <div class="charts-container">
+                                    <div class="chart col-lg-12 d-flex">
+                                        <div class="col-lg-7">
+                                            <canvas id="lineChart"></canvas>
                                         </div>
-                                        <div class="wg-table table-product-overview t2">
-                                            <ul class="table-title flex gap20 mb-14">
-                                                <li>
-                                                    <div class="body-title">Product</div>
-                                                </li>    
-                                                <li>
-                                                    <div class="body-title">Customer</div>
-                                                </li>
-                                                <li>
-                                                    <div class="body-title">Product ID</div>
-                                                </li>
-                                                <li>
-                                                    <div class="body-title">Quantity</div>
-                                                </li>
-                                                <li>
-                                                    <div class="body-title">Price</div>
-                                                </li>
-                                                <li>
-                                                    <div class="body-title">Status</div>
-                                                </li>
-                                            </ul>
-                                            <div class="divider mb-14"></div>
-                                            <ul class="flex flex-column gap10">
-                                                <li class="product-item gap14">
-                                                    <div class="image no-bg">
-                                                        <img src="images/products/31.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow gap20">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-title-2">Taste of the Wild Formula Finder</a>
-                                                        </div>
-                                                        <div class="body-text">2,672</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div class="body-text">X1</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div>
-                                                            <div class="block-available">Delivered</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li class="divider"></li>
-                                                <li class="product-item gap14">
-                                                    <div class="image no-bg">
-                                                        <img src="images/products/32.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow gap20">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-title-2">Proden Plaqueoff Dental Bites Dog, 150 G</a>
-                                                        </div>
-                                                        <div class="body-text">2,672</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div class="body-text">X2</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div>
-                                                            <div class="block-available">Delivered</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li class="divider"></li>
-                                                <li class="product-item gap14">
-                                                    <div class="image no-bg">
-                                                        <img src="images/products/33.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow gap20">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-title-2">Zuke's Lil' Links Healthy Little Sausage Links for Dogs...</a>
-                                                        </div>
-                                                        <div class="body-text">2,672</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div class="body-text">X1</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div>
-                                                            <div class="block-available">Delivered</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li class="divider"></li>
-                                                <li class="product-item gap14">
-                                                    <div class="image no-bg">
-                                                        <img src="images/products/34.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow gap20">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-title-2">Rachael Ray Nutrish Grain Free Chicken Drumstick...</a>
-                                                        </div>
-                                                        <div class="body-text">2,672</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div class="body-text">X3</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div>
-                                                            <div class="block-available">Delivered</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li class="divider"></li>
-                                                <li class="product-item gap14">
-                                                    <div class="image no-bg">
-                                                        <img src="images/products/35.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow gap20">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-title-2">Fruitables Dog Treats Sweet Potato & Pecan Flavor</a>
-                                                        </div>
-                                                        <div class="body-text">2,672</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div class="body-text">X2</div>
-                                                        <div class="body-text">$28,672.36</div>
-                                                        <div>
-                                                            <div class="block-available">Delivered</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                
-                                            </ul>
-                                        </div>
-                                        <div class="divider"></div>
-                                        <div class="flex items-center justify-between flex-wrap gap10">
-                                            <div class="text-tiny">Showing 5 entries</div>
-                                            <ul class="wg-pagination">
-                                                <li>
-                                                    <a href="#"><i class="icon-chevron-left"></i></a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">1</a>
-                                                </li>
-                                                <li class="active">
-                                                    <a href="#">2</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">3</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#"><i class="icon-chevron-right"></i></a>
-                                                </li>
-                                            </ul>
+                                        <div class="col-lg-5 py-5 ps-5 ">
+                                            <h3 class="mx-5 my-3 text-decoration-underline">Total Sales : <%= filterType %>
+                                            </h3>
+                                            <h4>Total orders : <%= salesCount %>
+                                            </h4>
+                                            <h4>Total Revenue : ₹ <%= totalAmount.toFixed(2) %>
+                                            </h4>
+                                            <h4></h4>
                                         </div>
                                     </div>
-                                    <!-- /orders -->
+                                    <div class="d-flex">
+                                        <div class="chart col-lg-6 d-block">
+                                            <div class="col-lg-12 pb-5 ps-5 align-content-center ms-5">
+                                                <div class="col-8 my-5">
+                                                    <canvas id="doughnut"></canvas>
+                                                </div>
+                                                <h3 class="mx-5 my-3 text-decoration-underline">Profit & Sales : <%= filterType %>
+                                                </h3>
+                                                <h4>Total orders : <%= salesCount %>
+                                                </h4>
+                                                <h4>Total Revenue : ₹ <%= totalAmount.toFixed(2) %>
+                                                </h4>
+                                                <h4>Total Discount : ₹ <%= totalDiscount.toFixed(2) %>
+                                                </h4>
+                                                <h4></h4>
+                                            </div>
+                                        </div>
+                                        <div class="chart col-lg-6 d-block">
+                                            <div class="col-lg-12 pb-5 ps-5 align-content-center ms-5">
+                                                <div class="col-8 my-5">
+                                                    <canvas id="polarArea"></canvas>
+                                                </div>
+                                                <h3 class="mx-5 my-3 text-decoration-underline">Order Statuses : <%= filterType %>
+                                                </h3>
+                                                <h4 class="ps-5 statuses">Total orders : <%= salesCount %>
+                                                </h4>
+                                                <div class="ps-5 statuses">
+                                                    <h5>Total Processing : <%= orderStatusMap.Processing %>
+                                                    </h5>
+                                                    <h5>Total Shipped : <%= orderStatusMap.Shipped %>
+                                                    </h5>
+                                                    <h5>Total Delivered : <%= orderStatusMap.Delivered %>
+                                                    </h5>
+                                                    <h5>Total Cancelled : <%= orderStatusMap.Cancelled %>
+                                                    </h5>
+                                                    <h5>Total ReturnRequest : <%= orderStatusMap["Return Request"] %>
+                                                    </h5>
+                                                    <h5>Total Returned : <%= orderStatusMap.Returned %>
+                                                    </h5>
+                                                </div>
+                        
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="tf-section-3">
-                                    <!-- top-product -->
-                                    <div class="wg-box">
-                                        <div class="flex items-center justify-between">
-                                            <h5>Top product</h5>
-                                            <div class="dropdown default">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                   <span class="icon-more"><i class="icon-more-horizontal"></i></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li>  
-                                                        <a href="javascript:void(0);">This Week</a>
-                                                    </li>
-                                                    <li>  
-                                                        <a href="javascript:void(0);">Last Week</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="wg-table table-top-product-1">
-                                            <ul class="table-title flex gap10 mb-14">
-                                                <li>
-                                                    <div class="body-title">Product</div>
-                                                </li>    
-                                                <li>
-                                                    <div class="body-title">Review</div>
-                                                </li>
-                                                <li>
-                                                    <div class="body-title">Sold</div>
-                                                </li>
-                                                <li>
-                                                    <div class="body-title">Profit</div>
-                                                </li>
-                                            </ul>
-                                            <ul class="flex flex-column gap18">
-                                                <li class="product-item">
-                                                    <div class="image small no-bg">
-                                                        <img src="images/products/36.png" alt="">
+                                <hr>
+                        
+                                <h2 class="text-center mb-4  text-decoration-underline">Best-Selling ( <%= filterType %> )</h2>
+                                <div class="container mt-5 d-flex">
+                                    <div class="col-lg-4 px-2">
+                                        <h3 class="text-center my-3">Best-Selling Products</h3>
+                                        <ul class="list-group">
+                                            <% topProducts.forEach(product=> { %>
+                                                <li class="list-group-item d-flex justify-content-center gap-5 align-items-center h6">
+                                                    <div class="col-lg-6">
+                                                    <%= product.productName %>
                                                     </div>
-                                                    <div class="flex items-center justify-between flex-grow">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-text">Prodotti per il tuo cane...</a>
-                                                        </div>
-                                                        <div>
-                                                            <div class="rating-number">
-                                                                <div class="icon">
-                                                                    <i class="icon-star1"></i>
-                                                                </div>
-                                                                <div class="number body-text">4.7</div>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">120</div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">$16.960</div>
-                                                        </div>
+                                                    <div class="badge bg-primary rounded-pill col-lg-3 ">
+                                                        <%= product.totalSold %> sold
                                                     </div>
                                                 </li>
-                                                <li class="product-item">
-                                                    <div class="image small no-bg">
-                                                        <img src="images/products/37.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-text">Wholesome Pride...</a>
-                                                        </div>
-                                                        <div>
-                                                            <div class="rating-number">
-                                                                <div class="icon">
-                                                                    <i class="icon-star1"></i>
-                                                                </div>
-                                                                <div class="number body-text">4.7</div>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">120</div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">$16.960</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li class="product-item">
-                                                    <div class="image small no-bg">
-                                                        <img src="images/products/38.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-text">Beneful Baked Delights...</a>
-                                                        </div>
-                                                        <div>
-                                                            <div class="rating-number">
-                                                                <div class="icon">
-                                                                    <i class="icon-star1"></i>
-                                                                </div>
-                                                                <div class="number body-text">4.7</div>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">120</div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">$16.960</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li class="product-item">
-                                                    <div class="image small no-bg">
-                                                        <img src="images/products/39.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-text">Taste of the Wild...</a>
-                                                        </div>
-                                                        <div>
-                                                            <div class="rating-number">
-                                                                <div class="icon">
-                                                                    <i class="icon-star1"></i>
-                                                                </div>
-                                                                <div class="number body-text">4.7</div>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">120</div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">$16.960</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li class="product-item">
-                                                    <div class="image small no-bg">
-                                                        <img src="images/products/40.png" alt="">
-                                                    </div>
-                                                    <div class="flex items-center justify-between flex-grow">
-                                                        <div class="name">
-                                                            <a href="product-list.html" class="body-text">Canagan - Britain's...</a>
-                                                        </div>
-                                                        <div>
-                                                            <div class="rating-number">
-                                                                <div class="icon">
-                                                                    <i class="icon-star1"></i>
-                                                                </div>
-                                                                <div class="number body-text">4.7</div>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">120</div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="body-text">$16.960</div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
+                                                <% }) %>
+                                        </ul>
                                     </div>
-                                    <!-- top-product -->
-                                    <!-- earnings -->
-                                    <div class="wg-box">
-                                        <div class="flex items-center justify-between">
-                                            <h5>Earnings</h5>
-                                            <div class="dropdown default">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                   <span class="icon-more"><i class="icon-more-horizontal"></i></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li>  
-                                                        <a href="javascript:void(0);">This Week</a>
-                                                    </li>
-                                                    <li>  
-                                                        <a href="javascript:void(0);">Last Week</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div id="line-chart-9"></div>
-                                        <div class="flex flex-wrap gap40 justify-center">
-                                            <div>
-                                                <div class="mb-2">
-                                                    <div class="block-legend">
-                                                        <div class="dot t1"></div>
-                                                        <div class="text-tiny">Revenue</div>
+                                    <div class="col-lg-4 px-2">
+                                        <h3 class="text-center my-3">Best-Selling Categories</h3>
+                                        <ul class="list-group">
+                                            <% topCategories.forEach(category=> { %>
+                                                <li class="list-group-item d-flex justify-content-center gap-5 align-items-center h6">
+                                                    <div class="col-lg-6">
+                                                    <%= category.categoryName %>
                                                     </div>
-                                                </div>
-                                                <div class="flex items-center gap10">
-                                                    <h4>$37,802</h4>
-                                                    <div class="box-icon-trending up">
-                                                        <i class="icon-trending-up"></i>
-                                                        <div class="body-title number">0.56%</div>
+                                                    <div class="badge bg-success rounded-pill col-lg-3">
+                                                        <%= category.totalSold %> sold
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="mb-2">
-                                                    <div class="block-legend">
-                                                        <div class="dot t2"></div>
-                                                        <div class="text-tiny">Profit</div>
-                                                    </div>
-                                                </div>
-                                                <div class="flex items-center gap10">
-                                                    <h4>$28,305</h4>
-                                                    <div class="box-icon-trending up">
-                                                        <i class="icon-trending-up"></i>
-                                                        <div class="body-title number">0.56%</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                </li>
+                                                <% }) %>
+                                        </ul>
                                     </div>
-                                    <!-- earnings -->
-                                    <!-- website-visitors -->
-                                    <div class="wg-box">
-                                        <div class="flex items-center justify-between">
-                                            <h5>Website visitors</h5>
-                                            <div class="dropdown default">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                   <span class="icon-more"><i class="icon-more-horizontal"></i></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li>  
-                                                        <a href="javascript:void(0);">This Week</a>
-                                                    </li>
-                                                    <li>  
-                                                        <a href="javascript:void(0);">Last Week</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div id="line-chart-10"></div>
-                                    </div>
-                                    <!-- website-visitors -->
+                                
                                 </div>
+                                <hr>
+                        
+                                
+                                <hr>
+                        
+                        
+                            </section>
                             </div>
                             <!-- /main-content-wrap -->
                         </div>
                         <!-- /main-content-wrap -->
                         <!-- bottom-page -->
 
-
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const filterType = document.querySelector('[name="filterType"]');
+                                const customDateSection = document.getElementById('custom-date');
+                    
+                                const toggleCustomDate = () => {
+                                    if (filterType.value === 'custom') {
+                                        customDateSection.classList.remove('d-none');
+                                        customDateSection.classList.add('d-flex');
+                    
+                                    } else {
+                                        customDateSection.classList.remove('d-flex');
+                                        customDateSection.classList.add('d-none');
+                                    }
+                                };
+                                filterType.addEventListener('change', toggleCustomDate);
+                                toggleCustomDate();
+                            });
+                        </script>
+                       <script>
+                        const totalAmount = '<%= totalAmount %>';
+                        const totalDiscount = '<%= totalDiscount %>';
+                        
+                        // Now that salesReport is defined, you can use it safely
+                        const salesReport = <%- JSON.stringify(salesReport) %>;
+                        const orderLabels = salesReport.map(order => new Date(order.createdOn).toLocaleDateString());
+                        const orderAmounts = salesReport.map(order => order.finalAmount);
+                        const discountAmounts = salesReport.map(order => order.discount);
+                    
+                        const doughnut = new Chart(document.getElementById('doughnut'), {
+                            type: 'pie',
+                            data: {
+                                labels: ['Total Sales', 'Total Discount'], 
+                                datasets: [{
+                                    data: [totalAmount, totalDiscount],
+                                    backgroundColor: ['#36a2eb', '#ff6384']
+                                }]
+                            }
+                        });
+                    
+                        const orderStatusMap = {
+                            Processing: '<%= orderStatusMap.Processing %>',
+                            Shipped: '<%= orderStatusMap.Shipped %>',
+                            Delivered: '<%= orderStatusMap.Delivered %>',
+                            Cancelled: '<%= orderStatusMap.Cancelled %>',
+                            ReturnRequest: '<%= orderStatusMap["Return Request"] %>',
+                            Returned: '<%= orderStatusMap.Returned %>'
+                        };
+                        const polarArea = new Chart(document.getElementById('polarArea'), {
+                            type: 'polarArea',
+                            data: {
+                                labels: ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned'],
+                                datasets: [{
+                                    data: [
+                                        orderStatusMap.Processing,
+                                        orderStatusMap.Shipped,
+                                        orderStatusMap.Delivered,
+                                        orderStatusMap.Cancelled,
+                                        orderStatusMap.ReturnRequest,
+                                        orderStatusMap.Returned
+                                    ],
+                                    backgroundColor: [
+                                        '#36a2eb', // Processing
+                                        '#ff6384', // Shipped
+                                        '#4bc0c0', // Delivered
+                                        '#ffcd56', // Cancelled
+                                        '#9966ff', // Return Request
+                                        '#ff9f40'  // Returned
+                                    ]
+                                }]
+                            }
+                        });
+                    
+                        // Line Chart: Shows total sales over the selected period
+                        const lineChart = new Chart(document.getElementById('lineChart'), {
+                            type: 'line',
+                            data: {
+                                labels: orderLabels,
+                                datasets: [{
+                                    label: 'Total Sales',
+                                    data: orderAmounts,
+                                    borderColor: '#ffcd56',
+                                    fill: false,
+                                    tension: .3
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    x: {
+                                        beginAtZero: true
+                                    },
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                    
+                    
 
 
 <%- include('../layouts/admin/footer.ejs') -%>

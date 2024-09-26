@@ -7,14 +7,14 @@ const getCoupon = async (req, res) => {
         let page = parseInt(req.query.page) || 1;
         const limit = 5;
 
-        // Query to find coupons with name or email matching the search term
-        const coupon = await Coupon.find({
+       
+        const coupons = await Coupon.find({
             $or: [
                 { name: { $regex: ".*" + search + ".*", $options: "i" } },
-               
+                { email: { $regex: ".*" + search + ".*", $options: "i" } }
             ]
         })
-        .sort({ name: 1 })  // Sort alphabetically by name
+        .sort({ _id: -1 })  
         .limit(limit)
         .skip((page - 1) * limit)
         .exec();
@@ -27,8 +27,10 @@ const getCoupon = async (req, res) => {
             ]
         });
 
+        const totalPages = Math.ceil(count / limit);
+
         // If no coupons are found, return an error message
-        if (coupon.length === 0) {
+        if (coupons.length === 0) {
             return res.render('coupon', {
                 coupon: [],
                 totalPages: 0,
@@ -40,8 +42,8 @@ const getCoupon = async (req, res) => {
 
         // Render the coupon page with the list of coupons
         res.render('coupon', {
-            coupon: coupon,
-            totalPages: Math.ceil(count / limit),
+            coupon: coupons,
+            totalPages: totalPages,
             currentPage: page,
             search: search,
             errorMessage: null
@@ -51,6 +53,7 @@ const getCoupon = async (req, res) => {
         res.status(500).send("Server Error");
     }
 };
+
 
 const loadAddCoupon = (req, res) => {
     try {
@@ -115,5 +118,6 @@ module.exports = {
     addCoupon,
     listCoupon,
     unlistCoupon
+
 
 }
