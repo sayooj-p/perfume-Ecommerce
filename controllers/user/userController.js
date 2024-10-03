@@ -8,9 +8,17 @@ const { session } = require("passport");
 
 const pageNotFound = async (req, res) => {
   try {
-    res.render("page-404");
+    res.render("page404");
   } catch (error) {
     res.redirect("/pageNotFound");
+  }
+};
+
+const serverError = async (req, res) => {
+  try {
+    res.render("page500");
+  } catch (error) {
+    res.redirect("/serverError");
   }
 };
 
@@ -53,7 +61,7 @@ const loadHome = async (req, res) => {
     }
   } catch (error) {
     console.error("Error loading home page:", error);
-    res.status(500).send("Server Error");
+    res.redirect("/serverError");
   }
 };
 
@@ -62,7 +70,7 @@ const loadRegister = async (req, res) => {
     res.render("signup");
   } catch (error) {
     console.log("signup page not found");
-    res.status(500).send("Server Error");
+    res.redirect("/serverError");
   }
 };
 
@@ -104,7 +112,7 @@ async function sentVerificationEmail(email, otp) {
 const insertUser = async (req, res) => {
   try {
     const { name, email, password, confirmPassword, mobile } = req.body;
-    console.log('1111111111111111111111111111111',req.body);
+   
     
     if (password !== confirmPassword) {
       res.render("signup", { message: "Passwords do not match." });
@@ -117,7 +125,7 @@ const insertUser = async (req, res) => {
     }
     const otp = generateOtp();
     const emailSent = await sentVerificationEmail(email, otp);
-    console.log("1233333333333333333",emailSent);
+   
     
     if (!emailSent) {
       return res.json("email-error");
@@ -128,7 +136,7 @@ const insertUser = async (req, res) => {
     console.log("OTP sent:", otp);
   } catch (error) {
     console.log("signup Error");
-    res.redirect("/pageNotFound");
+    res.redirect("/serverError");
   }
 };
 
@@ -170,7 +178,7 @@ const verifyOtp = async (req, res) => {
     }
   } catch (error) {
     console.log("Error verifying OTP", error);
-    res.status(500).json({ success: false, message: "An error occurred" });
+    res.redirect("/serverError");
   }
 };
 
@@ -199,7 +207,7 @@ const resendOtp = async (req, res) => {
     }
   } catch (error) {
     console.log("Error resend otp", error);
-    res.status(500).json({ success: false, message: "Internal server Error" });
+    res.redirect("/serverError");
   }
 };
 
@@ -211,7 +219,7 @@ const loginLoader = async (req, res) => {
       res.redirect("/");
     }
   } catch (error) {
-    res.redirect("/pageNotFound");
+    res.redirect("/serverError");
     console.log(error.message);
   }
 };
@@ -285,7 +293,7 @@ const loadProductDetails = async (req, res) => {
     }
   } catch (error) {
     console.log("Error loading product details:", error);
-    res.status(500).send("Server Error");
+    res.redirect("/serverError");
   }
 };
 
@@ -297,7 +305,7 @@ const profileDetails = async (req, res) => {
     // console.log(req.session.user.name);
   } catch (error) {
     console.log("error to showing profile Details page", error);
-    res.status(500).send("internal server error");
+    res.redirect("/serverError");
   }
 };
 const getProfile = async (req, res) => {
@@ -365,7 +373,7 @@ const getchangePassword = async (req, res) => {
     res.render("changePassword", { error: req.query.error || null, user });
   } catch (error) {
     console.log("error showing the change password", error);
-    res.status(500).send("Internal Server Error");
+    res.redirect("/serverError");
   }
 };
 
@@ -436,7 +444,7 @@ const getOtp = async (req, res) => {
     res.render("otp-page");
   } catch (error) {
     console.log("error this otp page ", error);
-    res.status(500).send("internal server erro");
+    res.redirect("/serverError");
   }
 };
 
@@ -456,7 +464,7 @@ const verifyOtpForgotPassword = async (req, res) => {
     }
   } catch (error) {
     console.log("Error verifying OTP", error);
-    res.status(500).json({ success: false, message: "An error occurred" });
+    res.redirect("/serverError");
   }
 };
 
@@ -533,6 +541,7 @@ const resendOtpForget = async (req, res) => {
 
 
 module.exports = {
+  serverError,
   pageNotFound,
   loadHome,
   loadRegister,

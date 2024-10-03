@@ -23,6 +23,7 @@ userRoute.use(passport.initialize());
 userRoute.use(passport.session());
 
 userRoute.get('/pageNotFound', userAuth, userController.pageNotFound);
+userRoute.get('/serverError', userAuth, userController.serverError);
 userRoute.get('/', userController.loadHome);
 userRoute.get('/home', userAuth, userController.loadHome);
 userRoute.get('/signup', userController.loadRegister);
