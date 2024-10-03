@@ -1,17 +1,17 @@
 const passport = require('passport');
-const GoogleStrstergy = require('passport-google-oauth20').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
  const User = require('../models/userModel')
  require('dotenv').config();
 
 
 // console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
 //  console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET);
-passport.use(new GoogleStrstergy({
-    
-    clientID:process.env.GOOGLE_CLIENT_ID,
-    clientSecret:process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL:'/auth/google/callback'
-    
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.NODE_ENV === 'production'
+        ? 'https://perfumparadise.online/auth/google/callback'  // Use production URL
+        : 'http://localhost:3002/auth/google/callback'  // Use localhost URL for development
 },
 
 
