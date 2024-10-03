@@ -84,49 +84,28 @@
                 <div class="card-header">
                     <h5>Filter Sales Report</h5>
                 </div>
-                <div class="card-body">
-                    <form id="sales-filter-form" class="d-flex flex-column gap-3">
-                        <!-- Date Range Picker -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="startDate" class="form-label">Start Date</label>
-                                <input type="date" id="startDate" class="form-control" style="width: 180px;">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="endDate" class="form-label">End Date</label>
-                                <input type="date" id="endDate" class="form-control" style="width: 180px;" >
-                            </div>
+                <div class="row my-4">
+                    <form action="/admin/getsalepage" method="GET" class="d-flex justify-content-end">
+                        <!-- Custom Date Range -->
+                        <div id="custom-date" class=" align-items-center mt-2 d-none">
+                            <label for="startDate" class="me-2">From:</label>
+                            <input type="date" name="startDate" id="startDate" value="<%=startDate ? new Date(startDate).toLocaleDateString('en-CA') :'' %>" class="form-control me-3 rounded-0 border">
+                            <label for="endDate" class="me-2">To:</label>
+                            <input type="date" name="endDate" id="endDate" value="<%=endDate ? new Date(endDate).toLocaleDateString('en-CA') : '' %>" class="form-control me-3 rounded-0 border">
                         </div>
-            
-                        <!-- Quick Filters (Day, Week, Month, Year) -->
-                        <div class="btn-group mb-3" role="group" aria-label="Quick Filters">
-                            <button type="button" class="btn btn-outline-primary" onclick="setFilter('daily')">Daily</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="setFilter('weekly')">Weekly</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="setFilter('monthly')">Monthly</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="setFilter('yearly')">Yearly</button>
-                        </div>
-            
-                        <!-- Generate Report Button -->
-                        <button type="button" class="btn btn-primary" onclick="generateReport()" style="width: 130px;">Generate Report</button>
+                        <select name="filterType" class="form-select me-3 rounded-0 border" style="width: 200px; height: 55px;">
+                            <option value="daily" <%= filterType === 'daily' ? 'selected' : '' %> >Daily</option>
+                            <option value="weekly" <%= filterType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                            <option value="yearly" <%= filterType === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                            <option value="custom" <%= filterType === 'custom' ? 'selected' : '' %>>Custom Date</option>
+                        </select>
+                        <button type="submit" class="btn btn-success text-light rounded-0 border me-4">Filter</button>
                     </form>
                 </div>
             </div>
             
-            <!-- Sales Report Display -->
-            <!-- <div class="card">
-                <div class="card-header">
-                    <h5>Generated Sales Report</h5>
-                </div>
-                <div class="card-body">
-                    <div id="salesReportContent">
-                         This will be populated with data via JavaScript 
-                        <div class="mb-2"><strong>Overall Sales Count:</strong> <span id="salesCount">0</span></div>
-                        <div class="mb-2"><strong>Overall Order Amount:</strong> <span id="orderAmount">₹0.00</span></div>
-                        <div class="mb-2"><strong>Overall Discounts Applied:</strong> <span id="discountAmount">₹0.00</span></div>
-                        <div class="mb-2"><strong>Coupons Deduction:</strong> <span id="couponsAmount">₹0.00</span></div>
-                    </div>
-                </div>
-            </div> -->
+           
+            </div> 
             
            
             
@@ -175,54 +154,83 @@
             </div>
 
            <!-- Sales Report Table -->
-                <div class="wg-box">
-                    <h5>Transfer History</h5>
-                    <% if (salesReport.length > 0) { %>
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr class="text-center">
-                                <th>Order ID</th>
-                                <th>User Name</th>
-                                <th>Products</th>
-                                <th>Total Amount</th>
-                                <th>Discount</th>
-                                <th>Coupon Applied</th>
-                                <th>Payment Method</th>
-                                <th>Order Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% salesReport.forEach(order => { %>
-                            <tr id="order-<%= order._id %>">
-                                <td><%= order.orderId %></td>
-                                <td><%= order.userId ? order.userId.name : 'Guest' %></td>
-                                <td>
-                                    <!-- Display all product names from orderedItems -->
-                                    <ul class="list-unstyled">
-                                        <% if (order.orderItems && order.orderItems.length > 0) { %>
-                                            <% order.orderItems.forEach(item => { %>
-                                                <li>
-                                                    <%= item.product.productName %> (Qty: <%= item.quantity %>)
-                                                </li>
-                                            <% }); %>
-                                        <% } else { %>
-                                            <li class="no-items">No items found.</li>
-                                        <% } %>
-                                    </ul>
-                                </td>
-                                <td>₹<%= order.finalAmount.toFixed(2) %></td>
-                                <td>₹<%= order.discount.toFixed(2) %></td>
-                                <td><%= order.couponApplied ? 'Yes' : 'No' %></td>
-                                <td><%= order.paymentMethod %></td>
-                                <td><%= order.status %></td>
-                            </tr>
+               <!-- Sales Report Table -->
+<div class="wg-box">
+    <h5>Transfer History</h5>
+    <% if (salesReport.length > 0) { %>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="text-center">
+                <th>Order ID</th>
+                <th>User Name</th>
+                <th>Products</th>
+                <th>Total Amount</th>
+                <th>Discount</th>
+                <th>Coupon Applied</th>
+                <th>Payment Method</th>
+                <th>Order Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% salesReport.forEach(order => { %>
+            <tr id="order-<%= order._id %>">
+                <td><%= order.orderId %></td>
+                <td><%= order.userId ? order.userId.name : 'Guest' %></td>
+                <td>
+                    <ul class="list-unstyled">
+                        <% if (order.orderItems && order.orderItems.length > 0) { %>
+                            <% order.orderItems.forEach(item => { %>
+                                <li>
+                                    <%= item.product.productName %> (Qty: <%= item.quantity %>)
+                                </li>
                             <% }); %>
-                        </tbody>
-                    </table>
-                    <% } else { %>
-                        <h1 class="text-center py-5">No sales report found.</h1>
-                    <% } %>
-                </div>
+                        <% } else { %>
+                            <li class="no-items">No items found.</li>
+                        <% } %>
+                    </ul>
+                </td>
+                <td>₹<%= order.finalAmount.toFixed(2) %></td>
+                <td>₹<%= order.discount.toFixed(2) %></td>
+                <td><%= order.couponApplied ? 'Yes' : 'No' %></td>
+                <td><%= order.paymentMethod %></td>
+                <td><%= order.status %></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <% if (currentPage > 1) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage - 1 %>&filterType=<%= filterType %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <% } %>
+
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>&filterType=<%= filterType %>&startDate=<%= startDate %>&endDate=<%= endDate %>"><%= i %></a>
+                </li>
+            <% } %>
+
+            <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage + 1 %>&filterType=<%= filterType %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+    
+    <% } else { %>
+        <h3 class="text-center py-5">No sales report found.</h3>
+    <% } %>
+</div>
+
 
         </div>
         <!-- /main-content-wrap -->
@@ -232,58 +240,23 @@
 <!-- /main-content -->
 
 <script>
-    // Function to set predefined filters
-function setFilter(type) {
-    const today = new Date();
-    let startDate, endDate;
-    
-    switch(type) {
-        case 'daily':
-            startDate = today.toISOString().split('T')[0];
-            endDate = today.toISOString().split('T')[0];
-            break;
-        case 'weekly':
-            startDate = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0];
-            endDate = new Date().toISOString().split('T')[0];
-            break;
-        case 'monthly':
-            startDate = new Date(today.setMonth(today.getMonth() - 1)).toISOString().split('T')[0];
-            endDate = new Date().toISOString().split('T')[0];
-            break;
-        case 'yearly':
-            startDate = new Date(today.setFullYear(today.getFullYear() - 1)).toISOString().split('T')[0];
-            endDate = new Date().toISOString().split('T')[0];
-            break;
-    }
-
-    document.getElementById('startDate').value = startDate;
-    document.getElementById('endDate').value = endDate;
-}
-
-// Function to simulate report generation
-function generateReport() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    
-    // if (!startDate || !endDate) {
-    //     alert('Please select a valid date range.');
-    //     return;
-    // }
-
-    // Simulated sales data
-    // const salesData = {
-    //     salesCount: 120, // Example data
-    //     orderAmount: 5000,
-    //     discountAmount: 300,
-    //     couponsAmount: 200
-    // };
-
-    // Update the report in the DOM
-    document.getElementById('salesCount').textContent = salesData.salesCount;
-    document.getElementById('orderAmount').textContent = `₹${salesData.orderAmount.toFixed(2)}`;
-    document.getElementById('discountAmount').textContent = `₹${salesData.discountAmount.toFixed(2)}`;
-    document.getElementById('couponsAmount').textContent = `₹${salesData.couponsAmount.toFixed(2)}`;
-}
-
+ 
+document.addEventListener('DOMContentLoaded', () => {
+          const filterType = document.querySelector('[name="filterType"]');
+          const customDateSection = document.getElementById('custom-date');
+                    
+            const toggleCustomDate = () => {
+                if (filterType.value === 'custom') {
+                        customDateSection.classList.remove('d-none');
+                        customDateSection.classList.add('d-flex');
+                    
+                        } else {
+                             customDateSection.classList.remove('d-flex');
+                             customDateSection.classList.add('d-none');
+                                }
+                                };
+                                filterType.addEventListener('change', toggleCustomDate);
+                                toggleCustomDate();
+                            });
 </script>
 <%- include('../layouts/admin/footer.ejs') -%>

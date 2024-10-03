@@ -140,7 +140,7 @@ const loadDashboard = async (req, res) => {
             salesCount,
             totalAmount,
             totalDiscount,
-            salesReport, // <-- Pass salesReport here
+            salesReport,
             filterType,
             startDate,
             endDate,

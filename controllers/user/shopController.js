@@ -10,7 +10,7 @@ const getShop = async (req, res) => {
         // Extract query parameters (with defaults)
         const user = req.session.user;
         const { page = 1, category, search, sort = 'createdAt', order = 'desc' } = req.query;
-        const limit = 6;  // Number of products per page
+        const limit = 8;  // Number of products per page
         const skip = (page - 1) * limit;
 
         // Initialize query object to filter products

@@ -57,7 +57,7 @@ const getCoupon = async (req, res) => {
 
 const loadAddCoupon = (req, res) => {
     try {
-        res.render('add-coupon',{});
+        res.render('addCoupon',{});
     } catch (error) {
         console.error('Error loading addCoupon page:', err);
         // res.redirect("/pageError")

@@ -1,0 +1,115 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Category Information</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li><a href="index.html"><div class="text-tiny">Dashboard</div></a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li><a href="#"><div class="text-tiny">Category</div></a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li><div class="text-tiny">Edit Category</div></li>
+                </ul>
+            </div>
+            <div class="wg-box">
+                <form method="post" action="/admin/editCategory/<%= category._id %>" class="form-new-product form-style-1" onsubmit="return handleFormSubmit(event)">
+                    <fieldset class="name">
+                        <div class="body-title">Category Name <span class="tf-color-1">*</span></div>
+                        <input class="flex-grow" type="text" placeholder="Category name" value="<%= category.name %>" id="name" name="name" tabindex="0" required>
+                    </fieldset>
+                  
+                    <div id="name-error" class="error-message"></div>
+                    <div class="bot">
+                        <button class="tf-button w208" type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function handleFormSubmit(event) {
+        event.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
+        const name = document.getElementById('name').value.trim();
+        const form = event.target;
+        const action = form.action;
+
+        fetch(action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.error);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message
+            }).then(() => {
+                window.location.href = '/admin/category';
+            });
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops',
+                text: error.message || 'An error occurred while editing the category'
+            });
+        });
+    }
+
+    function validateForm() {
+        clearErrorMessage();
+        let isValid = true;
+
+        const name = document.getElementById('name').value.trim();
+
+        if (name === "") {
+            displayErrorMessage('name-error', "Please enter a name");
+            isValid = false;
+        } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+            displayErrorMessage('name-error', "Name should be alphabetic");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function displayErrorMessage(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.innerText = message;
+            errorElement.style.color = 'red';
+        }
+    }
+
+    function clearErrorMessage() {
+        const errorElements = document.getElementsByClassName("error-message");
+        Array.from(errorElements).forEach((element) => {
+            element.innerText = "";
+            element.style.color = "none";
+        });
+    }
+</script>
+
+<%- include('../layouts/admin/footer.ejs') -%>

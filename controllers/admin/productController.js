@@ -8,7 +8,7 @@ const { findOne } = require('../../models/userModel');
 const loadAddProduct = async (req, res) => {
     try {
         const categoryData = await Category.find({ isListed: false });
-        res.render('add-product', { categoryData });
+        res.render('addProduct', { categoryData });
     } catch (error) {
         console.log("Error loading add product page:", error);
         res.status(500).send('Server Error');
@@ -86,7 +86,7 @@ const getEditProduct = async (req, res) => {
         const categoryData = await Category.find({ isListed: false });
         const editProductData = await Product.findById(productId);
 
-        res.render('edit-product', {
+        res.render('editProduct', {
             product: editProductData,
             categories: categoryData
         });
@@ -101,30 +101,70 @@ const updateProduct = async (req, res) => {
     try {
         const productId = req.params.id;
 
-        // Split existing images string into an array
-        const existingImages = req.body.existingImages ? req.body.existingImages.split(',').map(img => img.trim()) : [];
+        // Fetch the product
+        const product = await Product.findById(productId);
 
+        // Initialize update data
         const updateProductData = {
             productName: req.body.productName,
             description: req.body.description,
             price: req.body.price,
             quantity: req.body.quantity,
             category: req.body.category,
-            regularPrice: req.body.regprice,
-            productImage: existingImages // Initialize with existing images
+            regularPrice: req.body.regularPrice,
+            productImage: product.productImage // Start with existing images
         };
 
-        // Handle new images upload
-        if (req.files && req.files.length > 0) {
-            const newImages = req.files.map(file => {
-                return "/productImages/" + file.filename;
-            });
+        // Set the status based on quantity
+        updateProductData.status = req.body.quantity > 0 ? 'In Stock' : 'Out of Stock';
 
-            // Combine existing and new images
-            updateProductData.productImage = [...existingImages, ...newImages];
+        // Handle replacement of product images
+        const existingImages = product.productImage;
+
+        // Check if each image is replaced and handle accordingly
+        if (req.body.productImage1Replaced === 'true' && req.files.productImage1) {
+            // Delete old image from file system
+            const oldImage1 = existingImages[0];
+            if (oldImage1) {
+                const oldImagePath = path.join(__dirname, '../../public', oldImage1);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+            // Replace with new image
+            updateProductData.productImage[0] = "/productImages/" + req.files.productImage1[0].filename;
         }
 
+        if (req.body.productImage2Replaced === 'true' && req.files.productImage2) {
+            // Delete old image from file system
+            const oldImage2 = existingImages[1];
+            if (oldImage2) {
+                const oldImagePath = path.join(__dirname, '../../public', oldImage2);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+            // Replace with new image
+            updateProductData.productImage[1] = "/productImages/" + req.files.productImage2[0].filename;
+        }
+
+        if (req.body.productImage3Replaced === 'true' && req.files.productImage3) {
+            // Delete old image from file system
+            const oldImage3 = existingImages[2];
+            if (oldImage3) {
+                const oldImagePath = path.join(__dirname, '../../public', oldImage3);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+            // Replace with new image
+            updateProductData.productImage[2] = "/productImages/" + req.files.productImage3[0].filename;
+        }
+
+        // Update product with new data
         await Product.findByIdAndUpdate(productId, updateProductData, { new: true });
+
+        // Redirect to the products page after update
         res.redirect('/admin/products');
     } catch (err) {
         console.log(err);

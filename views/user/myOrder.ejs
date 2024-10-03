@@ -65,7 +65,7 @@
 
                 <!-- Card Footer with Action Buttons -->
                 <div class="card-footer text-center">
-                  <a href="/view-orderDetails/<%= order._id %>" class="btn btn-info">View Details</a>
+                  <a href="/viewOrderDetails/<%= order._id %>" class="btn btn-info">View Details</a>
                   <% if (order.status === 'Pending' || order.status === 'Processing') { %>
                     <button class="btn btn-danger btn-cancel-order" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
                   <% } %>
@@ -130,7 +130,7 @@
 
   async function initiateRepayment(orderId, amount, razorpayOrderId) {
   try {
-    const response = await axios.post('/initiate-repayment', { orderId });
+    const response = await axios.post('/initiateRepayment', { orderId });
 
     if (response.data.success) {
       const options = {
@@ -173,7 +173,7 @@
 
   async function handleRePaymentSuccess(paymentId, razorpayOrderId, signature, orderId) {
     try {
-      const response = await axios.post('/verify-repayment', {
+      const response = await axios.post('/verifyRepayment', {
         paymentId,
         razorpayOrderId,
         signature,

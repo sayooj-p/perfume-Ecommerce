@@ -1,0 +1,291 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Add Product</h3>
+            </div>
+            <!-- form-add-product -->
+            <form action="/admin/addProduct" method="post" enctype="multipart/form-data" class="tf-section-2 form-add-product" id="validateform">
+                <div class="wg-box">
+                    <fieldset class="name">
+                        <div class="body-title mb-10">Product name <span class="tf-color-1">*</span></div>
+                        <input class="mb-10" type="text" placeholder="Enter product name" id="productName" name="productName" tabindex="0" required>
+                        <div class="error-message" style="color: red;" id="error-name"></div>
+                    </fieldset>
+                    <div class="gap22 cols">
+                        <fieldset class="quantity">
+                            <div class="body-title mb-10">Stock <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" id="quantity" name="quantity" placeholder="Enter stock" tabindex="0" required>
+                            <div class="error-message" style="color: red;" id="error-stock"></div>
+                        </fieldset>
+                    </div>
+                    <div class="gap22 cols">
+                        <fieldset class="category">
+                            <div class="body-title mb-10">Category <span class="tf-color-1">*</span></div>
+                            <div class="select">
+                                <select id="category" name="category" required>
+                                    <% categoryData.forEach(category => { %>
+                                        <option value="<%= category._id %>"><%= category.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </fieldset>
+                        <fieldset class="status">
+                            <div class="body-title mb-10">RegularPrice <span class="tf-color-1">*</span></div>
+                            <div class="regularPrice">
+                              
+                                <input class="mb-10" type="text" id="regularPrice" name="regularPrice" placeholder="Enter Regular price" tabindex="0" required>
+                                <div class="error-message" style="color: red;" id="error-regprice"></div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="gap22 cols mb-10">
+                        <fieldset class="price">
+                            <div class="body-title mb-10">Price <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" id="price" name="price" placeholder="Enter price" tabindex="0" required>
+                            <div class="error-message" style="color: red;" id="error-price"></div>
+                        </fieldset>
+                    </div>
+                    <fieldset class="description">
+                        <div class="body-title mb-10">Description <span class="tf-color-1">*</span></div>
+                        <textarea class="mb-10" id="description" name="description" placeholder="Description" tabindex="0" required></textarea>
+                    </fieldset>
+                </div>
+                <div class="wg-box">
+                    <div class="container">
+                        <div class="body-title mb-5 pb-3">Upload images</div>
+                        <div class="row g-3">
+                            <!-- First Image Uploader -->
+                            <div class="col-md-4">
+                                <fieldset>
+                                    <div class="upload-image mb-3 d-flex justify-content-center align-items-center" style="width: 135px;">
+                                        <div class="item up-load d-flex flex-column align-items-center justify-content-center">
+                                            <label class="uploadfile d-flex flex-column align-items-center justify-content-center gap-2" for="productImage1">
+                                                <span class="icon mb-2">
+                                                    <i class="icon-upload-cloud"></i>
+                                                </span>
+                                                <span class="text-tiny">Select an image <span class="tf-color">click to browse</span></span>
+                                                <input type="file" id="productImage1" name="productImage1" required onchange="handleFileChange(event, 1)">
+                                            </label>
+                                            <img id="image1Preview" src="#" alt="Image Preview" style="display:none; max-width: 100%; height: auto;" />
+                                        </div>
+                                    </div>
+                                    <button type="button" id="btnCrop1" style="display:none;">Crop Image</button>
+                                    <!-- <button type="button" id="btnRefresh1" style="display:none;">Refresh</button> -->
+                                </fieldset>
+                            </div>
+
+                            <!-- Second Image Uploader -->
+                            <div class="col-md-4">
+                                <fieldset>
+                                    <div class="upload-image mb-3 d-flex justify-content-center align-items-center" style="width: 135px;">
+                                        <div class="item up-load d-flex flex-column align-items-center justify-content-center">
+                                            <label class="uploadfile d-flex flex-column align-items-center justify-content-center gap-2" for="productImage2">
+                                                <span class="icon mb-2">
+                                                    <i class="icon-upload-cloud"></i>
+                                                </span>
+                                                <span class="text-tiny">Select an image <span class="tf-color">click to browse</span></span>
+                                                <input type="file" id="productImage2" name="productImage2" required onchange="handleFileChange(event, 2)">
+                                            </label>
+                                            <img id="image2Preview" src="#" alt="Image Preview" style="display:none; max-width: 100%; height: auto;" />
+                                        </div>
+                                    </div>
+                                    <button type="button" id="btnCrop2" style="display:none;">Crop Image</button>
+                                    <!-- <button type="button" id="btnRefresh2" style="display:none;">Refresh</button> -->
+                                </fieldset>
+                            </div>
+
+                            <!-- Third Image Uploader -->
+                            <div class="col-md-4">
+                                <fieldset>
+                                    <div class="upload-image mb-3 d-flex justify-content-center align-items-center" style="width: 135px;">
+                                        <div class="item up-load d-flex flex-column align-items-center justify-content-center">
+                                            <label class="uploadfile d-flex flex-column align-items-center justify-content-center gap-2" for="productImage3">
+                                                <span class="icon mb-2">
+                                                    <i class="icon-upload-cloud"></i>
+                                                </span>
+                                                <span class="text-tiny">Select an image <span class="tf-color">click to browse</span></span>
+                                                <input type="file" id="productImage3" name="productImage3" required onchange="handleFileChange(event, 3)">
+                                            </label>
+                                            <img id="image3Preview" src="#" alt="Image Preview" style="display:none; max-width: 100%; height: auto;" />
+                                        </div>
+                                    </div>
+                                    <button type="button" id="btnCrop3" style="display:none;">Crop Image</button>
+                                    
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cols gap10">
+                    <button class="tf-button w-full" type="submit">Add product</button>
+                </div>
+            </form>
+            <!-- /form-add-product -->
+        </div>
+        <!-- /main-content-wrap -->
+    </div>
+    <!-- /main-content-wrap -->
+    <!-- bottom-page -->
+</div>
+
+<%- include('../layouts/admin/footer.ejs') -%>
+
+<!-- Include Cropper.js from a CDN or local file -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+
+<script>
+    let cropper1, cropper2, cropper3;
+
+    function handleFileChange(event, imageNumber) {
+        const imagePreview = document.getElementById('image' + imageNumber + 'Preview');
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                initCropper(imagePreview, imageNumber);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function initCropper(imageElement, imageNumber) {
+        if (imageNumber === 1 && cropper1) cropper1.destroy();
+        if (imageNumber === 2 && cropper2) cropper2.destroy();
+        if (imageNumber === 3 && cropper3) cropper3.destroy();
+
+        let cropperInstance = new Cropper(imageElement, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+            movable: true,
+            zoomable: true,
+            rotatable: true,
+            scalable: true,
+        });
+
+        if (imageNumber === 1) cropper1 = cropperInstance;
+        if (imageNumber === 2) cropper2 = cropperInstance;
+        if (imageNumber === 3) cropper3 = cropperInstance;
+
+        document.getElementById('btnCrop' + imageNumber).style.display = 'inline-block';
+        // document.getElementById('btnRefresh' + imageNumber).style.display = 'inline-block';
+    }
+
+    function cropImage(imageNumber) {
+    let canvas;
+    if (imageNumber === 1 && cropper1) canvas = cropper1.getCroppedCanvas();
+    if (imageNumber === 2 && cropper2) canvas = cropper2.getCroppedCanvas();
+    if (imageNumber === 3 && cropper3) canvas = cropper3.getCroppedCanvas();
+
+    if (canvas) {
+        canvas.toBlob(function(blob) {
+            const fileInput = document.getElementById('productImage' + imageNumber);
+            const file = new File([blob], 'croppedImage' + imageNumber + '.png', { type: 'image/png' });
+
+            // Create a DataTransfer object and append the cropped image to it
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+
+            // Assign the cropped image to the input element
+            fileInput.files = dataTransfer.files;
+
+            // Update the preview
+            document.getElementById('image' + imageNumber + 'Preview').src = canvas.toDataURL();
+            if (imageNumber === 1 && cropper1) cropper1.destroy();
+            if (imageNumber === 2 && cropper2) cropper2.destroy();
+            if (imageNumber === 3 && cropper3) cropper3.destroy();
+        });
+    }
+}
+
+    document.getElementById('btnCrop1').addEventListener('click', function() { cropImage(1); });
+    document.getElementById('btnCrop2').addEventListener('click', function() { cropImage(2); });
+    document.getElementById('btnCrop3').addEventListener('click', function() { cropImage(3); });
+
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const nameid = document.getElementById('productName');
+        const stockid = document.getElementById('quantity');
+        const priceid = document.getElementById('price');
+        const regpriceid = document.getElementById('regularPrice');
+        const validateform = document.getElementById('validateform');
+        
+        const nameError = document.getElementById('error-name');
+        const stockError = document.getElementById('error-stock');
+        const priceError = document.getElementById('error-price');
+        const regpriceError = document.getElementById('error-regprice');
+
+        function nameValidateChecking() {
+            const nameVal = nameid.value;
+            const namePattern = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
+            
+            if (nameVal.trim() === "") {
+                nameError.style.display = "block";
+                nameError.innerHTML = "Please enter a valid name.";
+            } else if (!namePattern.test(nameVal)) {
+                nameError.style.display = "block";
+                nameError.innerHTML = "Name can only contain alphabets and spaces.";
+            } else {
+                nameError.style.display = "none";
+                nameError.innerHTML = "";
+            }
+        }
+
+        function stockValidateChecking() {
+            const stockVal = stockid.value;
+            const stockPattern = /^[1-9]\d*$/;
+            
+            if (!stockPattern.test(stockVal)) {
+                stockError.style.display = "block";
+                stockError.innerHTML = "Please enter a valid stock quantity.";
+            } else {
+                stockError.style.display = "none";
+                stockError.innerHTML = "";
+            }
+        }
+
+        function priceValidateChecking() {
+            const priceVal = priceid.value;
+            const pricePattern = /^\d+(\.\d{1,2})?$/;
+            
+            if (!pricePattern.test(priceVal)) {
+                priceError.style.display = "block";
+                priceError.innerHTML = "Please enter a valid price (positive number with up to two decimal places).";
+            } else {
+                priceError.style.display = "none";
+                priceError.innerHTML = "";
+            }
+        }
+        function regpriceValidateChecking() {
+            const regpriceVal = regpriceid.value;
+            const regpricePattern = /^\d+(\.\d{1,2})?$/;
+            
+            if (!regpricePattern.test(regpriceVal)) {
+                regpriceError.style.display = "block";
+                regpriceError.innerHTML = "Please enter a valid regular price (positive number with up to two decimal places).";
+            } else {
+                regpriceError.style.display = "none";
+                regpriceError.innerHTML = "";
+            }
+        }
+
+        validateform.addEventListener('submit', (e) => {
+            nameValidateChecking();
+            stockValidateChecking();
+            priceValidateChecking();
+            regpriceValidateChecking();
+            // Check if there are any errors and prevent form submission if there are
+            if (nameError.innerHTML || stockError.innerHTML || priceError.innerHTML || regpriceError.innerHTML) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>

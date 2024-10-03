@@ -26,7 +26,7 @@
             <div class="wg-box">
 
                 <div class="flex items-center justify-between gap10 flex-wrap">
-                    <a class="tf-button style-1 w208" href="/admin/add-product"><i class="icon-plus"></i>Add new</a>
+                    <a class="tf-button style-1 w208" href="/admin/addProduct"><i class="icon-plus"></i>Add new</a>
                 </div>
                 <% if (products.length === 0) { %>
                     <div class="empty d-flex justify-center">
@@ -86,7 +86,7 @@
                                     <td><%= product.price %></td> <!-- No need to style, CSS above handles it -->
                                     <td><%= product.quantity %></td>
                                     <td><%= product.category.name %></td>
-                                    <td class="<%= product.status === 'in Stock' ? 'status-stock' : 'status-unstock' %>">
+                                    <td class="<%= product.quantity > 0 ? 'status-stock' : 'status-unstock' %>">
                                         <%= product.status %>
                                     </td>
                                     <td>
@@ -107,11 +107,11 @@
                                         <% } %>
                                     </td>
                                     <td>
-                                        <a href="/admin/edit-product/<%= product._id %>" class="btn btn-primary" style="margin-bottom: 5px; display: block;">Edit</a>
+                                        <a href="/admin/editProduct/<%= product._id %>" class="btn btn-primary" style="margin-bottom: 5px; display: block;">Edit</a>
                                         <% if (product.isBlocked) { %>
-                                            <a href="/admin/listproducts?id=<%= product._id %>" class="btn btn-success" style="display: block;">List</a>
+                                            <a href="/admin/listProducts?id=<%= product._id %>" class="btn btn-success" style="display: block;">List</a>
                                         <% } else { %>
-                                            <a href="/admin/unlistproducts?id=<%= product._id %>" class="btn btn-danger" style="display: block;">Unlist</a>
+                                            <a href="/admin/unlistProducts?id=<%= product._id %>" class="btn btn-danger" style="display: block;">Unlist</a>
                                         <% } %>
                                     </td>
                                 </tr>

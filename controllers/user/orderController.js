@@ -56,7 +56,7 @@ const downloadInvoice = async (req, res) => {
 
 
 
-// Controller to handle order-success page rendering
+// Controller to handle ordersuccess page rendering
 const getOrderDetails = async (req, res) => {
   try {
     const user = req.session.user;
@@ -72,7 +72,7 @@ const getOrderDetails = async (req, res) => {
     }
 
     // Assuming you want to render a page for order details
-    res.render("order-success", { order,user });
+    res.render("orderSuccess", { order,user });
   } catch (error) {
     console.error('Error fetching order:', error);
     res.status(500).json({ message: 'An error occurred while retrieving the order.' });
@@ -107,7 +107,7 @@ const viewOrderDetails = async (req, res) => {
     }
 
     // Render the order details page
-    res.render("view-orderDetails", { order, user });
+    res.render("viewOrderDetails", { order, user });
   } catch (error) {
     console.error("Error fetching order details:", error);
     res.status(500).json({ message: "An error occurred while retrieving the order details." });

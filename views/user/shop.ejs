@@ -68,9 +68,9 @@
                                     
                                 </form>
                             </div><!-- End .toolbox-left -->
-                            <div class="toolbox-sort">
-                                <label for="sortby">Sort by:</label>
-                                <select name="sortby" id="sortby" onchange="applySortAndFilter(this.value)">
+                            <div class="toolbox-sort" style="width: 220px;">
+                                <label class="sort-by" for="sortby" style="color: grey; font-weight: 400; font-size: 1.4rem;">Sort by:</label>
+                                <select name="sortby" id="sortby" onchange="applySortAndFilter(this.value)" style="height: 35px; color: rgb(116, 112, 112);">
                                     <option value="createdAt_desc" <%= sort === 'createdAt' && order === 'desc' ? 'selected' : '' %>>New Arrivals</option>
                                     <option value="price_asc" <%= sort === 'price' && order === 'asc' ? 'selected' : '' %>>Price: low to high</option>
                                     <option value="price_desc" <%= sort === 'price' && order === 'desc' ? 'selected' : '' %>>Price: high to low</option>
@@ -93,10 +93,10 @@
                                                     <img src="<%= product.productImage[0] %>" alt="Product image" class="product-image" style="width:360px; height: 273px; object-fit: cover;">
                                                 </a>
                                                 <div class="product-action-vertical">
-                                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                                    <a href="#" class="btn-product-icon btn-wishlist" data-product-id="<%= product._id %>"> <span>add to wishlist</span> </a>
                                                 </div><!-- End .product-action-vertical -->
                                                 <div class="product-action">
-                                                    <% if (product.status === 'in Stock') { %>
+                                                    <% if (product.quantity > 0) { %>
                                                         <% if (cartProductIds.includes(product._id.toString())) { %>
                                                             <a href="/cart" class="btn-product btn-cart"><span>Go to Cart</span></a>
                                                         <% } else { %>
@@ -333,6 +333,51 @@
           });
       });
     });
+
+    document.querySelectorAll('.btn-wishlist').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        const productId = this.getAttribute('data-product-id');
+        
+        axios.post('/wishList', { productId })
+            .then(response => {
+                // Handle the response from the server
+                if (response.data.success) {
+                    // SweetAlert for successful addition
+                    Swal.fire({
+                       
+                        text: 'The product has been successfully added to your wishlist.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(()=>{
+                        window.location.reload();
+                    })
+
+                   
+                   
+                } else {
+                    // SweetAlert for item already in wishlist
+                    Swal.fire({
+                        title: 'Already in Wishlist!',
+                        text: 'This product is already in your wishlist.',
+                        icon: 'info',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error adding to wishlist:', error);
+
+                // SweetAlert for error
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an issue adding the product to your wishlist. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+    });
+});
   </script>
 </main><!-- End .main -->
 

@@ -1,5 +1,5 @@
 const express = require('express');
-const user_route = express();
+const userRoute = express();
 const userController = require("../controllers/user/userController");
 const addressController = require('../controllers/user/addressController');
 const cartController = require('../controllers/user/cartController')
@@ -13,109 +13,109 @@ const userAuth= require('../middlware/auth');
 
 
 
-user_route.set("view engine", "ejs");
-user_route.set("views", "./views/user");
-user_route.use(express.json());
-user_route.use(express.urlencoded({ extended: true }));
+userRoute.set("view engine", "ejs");
+userRoute.set("views", "./views/user");
+userRoute.use(express.json());
+userRoute.use(express.urlencoded({ extended: true }));
 
 //user managment
-user_route.use(passport.initialize());
-user_route.use(passport.session());
+userRoute.use(passport.initialize());
+userRoute.use(passport.session());
 
-user_route.get('/pageNotFound', userAuth, userController.pageNotFound);
-user_route.get('/', userController.loadHome);
-user_route.get('/home', userAuth, userController.loadHome);
-user_route.get('/signup', userController.loadRegister);
-user_route.post('/signup', userController.insertUser);
-user_route.post('/verify-otp', userController.verifyOtp);
-user_route.post('/resend-otp', userController.resendOtp);
-user_route.get('/productdetails/:id', userController.loadProductDetails);
+userRoute.get('/pageNotFound', userAuth, userController.pageNotFound);
+userRoute.get('/', userController.loadHome);
+userRoute.get('/home', userAuth, userController.loadHome);
+userRoute.get('/signup', userController.loadRegister);
+userRoute.post('/signup', userController.insertUser);
+userRoute.post('/verify-otp', userController.verifyOtp);
+userRoute.post('/resend-otp', userController.resendOtp);
+userRoute.get('/productdetails/:id', userController.loadProductDetails);
 
-user_route.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-user_route.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+userRoute.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+userRoute.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
 if(req.user){
   req.session.user=req.user;  
 }
   res.redirect('/');
 });
-user_route.get('/login', userController.loginLoader);
-user_route.post('/login', userController.login);
-user_route.get('/logout', userController.logout);
+userRoute.get('/login', userController.loginLoader);
+userRoute.post('/login', userController.login);
+userRoute.get('/logout', userController.logout);
 
 //profile managment
-user_route.get('/profile',userAuth,userController.profileDetails);
-user_route.get('/edit-profile',userAuth,userController.getProfile);
-user_route.post('/edit-profile/:userId',userAuth,userController.updateProfile);
-user_route.get('/change-password',userAuth,userController.getchangePassword);
+userRoute.get('/profile',userAuth,userController.profileDetails);
+userRoute.get('/editProfile',userAuth,userController.getProfile);
+userRoute.post('/editProfile/:userId',userAuth,userController.updateProfile);
+userRoute.get('/changePassword',userAuth,userController.getchangePassword);
 
 
-user_route.post('/change-password',userAuth,userController.changePassword);
-user_route.get('/forget-password',userAuth,userController.getForgetPassword);
-user_route.get('/otp-page',userAuth,userController.getOtp)
-user_route.post('/verifyOtpForgotPassword',userAuth, userController.verifyOtpForgotPassword);
-user_route.get('/loadResetPassword',userAuth, userController.loadResetPassword);
-user_route.post('/changeForgotPassword',userAuth, userController.changeForgotPassword);
-user_route.post('/resend-otp-forget', userAuth,userController.resendOtpForget);
+userRoute.post('/changePassword',userAuth,userController.changePassword);
+userRoute.get('/forgetPassword',userAuth,userController.getForgetPassword);
+userRoute.get('/otp-page',userAuth,userController.getOtp)
+userRoute.post('/verifyOtpForgotPassword',userAuth, userController.verifyOtpForgotPassword);
+userRoute.get('/loadResetPassword',userAuth, userController.loadResetPassword);
+userRoute.post('/changeForgotPassword',userAuth, userController.changeForgotPassword);
+userRoute.post('/resend-otp-forget', userAuth,userController.resendOtpForget);
 
 
 //addressManagment
 
-user_route.get('/manage-address',userAuth,addressController.getManageAddress);
-user_route.get('/add-address',userAuth,addressController.loadAddAddress);
-user_route.post('/add-address',userAuth,addressController.addAddress);
-user_route.get('/edit-address/:addressId',userAuth,addressController.editAddress);
-user_route.post('/update-address/:addressId', userAuth, addressController.updateAddress);
-user_route.delete('/delete-address/:addressId',userAuth,addressController.deleteAddress);
+userRoute.get('/manageAddress',userAuth,addressController.getManageAddress);
+userRoute.get('/addAddress',userAuth,addressController.loadAddAddress);
+userRoute.post('/addAddress',userAuth,addressController.addAddress);
+userRoute.get('/editAddress/:addressId',userAuth,addressController.editAddress);
+userRoute.post('/updateAddress/:addressId', userAuth, addressController.updateAddress);
+userRoute.delete('/deleteAddress/:addressId',userAuth,addressController.deleteAddress);
 
 
 //cart Managment
-user_route.get('/cart',userAuth,cartController.getCart);
-user_route.post('/cart',userAuth,cartController.addItemToCart);
-user_route.delete('/cart/:productId',userAuth,cartController.deleteCart);
-user_route.post('/update-cart-item',userAuth,cartController.updateCart);
+userRoute.get('/cart',userAuth,cartController.getCart);
+userRoute.post('/cart',userAuth,cartController.addItemToCart);
+userRoute.delete('/cart/:productId',userAuth,cartController.deleteCart);
+userRoute.post('/updateCartItem',userAuth,cartController.updateCart);
 
 //checkout managment
-user_route.get('/checkout',userAuth,checkoutController.getCheckout);
-user_route.get('/manage-address',userAuth,checkoutController.getManageAddress);
-user_route.get('/add-address',userAuth,checkoutController.loadAddAddress);
-user_route.post('/add-address',userAuth,checkoutController.addAddress);
-user_route.get('/edit-address/:addressId',userAuth,checkoutController.editAddress);
-user_route.post('/update-address/:addressId', userAuth, checkoutController.updateAddress);
-user_route.post('/apply-coupon', userAuth, checkoutController.applyCoupon);
-user_route.post('/create-order',userAuth,checkoutController.createOrder);
-user_route.post('/verify-payment',userAuth,checkoutController.verifyPayment);
-user_route.post('/order-success',userAuth,checkoutController.placeOrder);
-user_route.post('/initiate-repayment' ,userAuth,checkoutController.initiateRepayment)
-user_route.post('/verify-repayment' ,userAuth,checkoutController.verifyRepayment)
+userRoute.get('/checkout',userAuth,checkoutController.getCheckout);
+userRoute.get('/manageAddress',userAuth,checkoutController.getManageAddress);
+userRoute.get('/addAddress',userAuth,checkoutController.loadAddAddress);
+userRoute.post('/addAddress',userAuth,checkoutController.addAddress);
+userRoute.get('/editAddress/:addressId',userAuth,checkoutController.editAddress);
+userRoute.post('/updateAddress/:addressId', userAuth, checkoutController.updateAddress);
+userRoute.post('/applyCoupon', userAuth, checkoutController.applyCoupon);
+userRoute.post('/createOrder',userAuth,checkoutController.createOrder);
+userRoute.post('/verifyPayment',userAuth,checkoutController.verifyPayment);
+userRoute.post('/orderSuccess',userAuth,checkoutController.placeOrder);
+userRoute.post('/initiateRepayment' ,userAuth,checkoutController.initiateRepayment)
+userRoute.post('/verifyRepayment' ,userAuth,checkoutController.verifyRepayment)
 
 
 
 //shop managment
 
-user_route.get('/shop',shopController.getShop);
+userRoute.get('/shop',shopController.getShop);
 // user_route.post('/shop',userAuth,shopController.getShop);
   
 
 //order Managment
 
-user_route.get('/order-success',userAuth,orderController.getOrderDetails);
+userRoute.get('/orderSuccess',userAuth,orderController.getOrderDetails);
 
-user_route.get('/view-orderDetails/:orderId',userAuth,orderController.viewOrderDetails);
-user_route.post('/cancelOrder',userAuth,orderController.cancelOrder);
-user_route.post('/returnOrder',userAuth,orderController.returnOrder);
-user_route.get('/myOrder',userAuth,orderController.myOrder);
-user_route.get('/downloadInvoice',userAuth,orderController.downloadInvoice);
+userRoute.get('/viewOrderDetails/:orderId',userAuth,orderController.viewOrderDetails);
+userRoute.post('/cancelOrder',userAuth,orderController.cancelOrder);
+userRoute.post('/returnOrder',userAuth,orderController.returnOrder);
+userRoute.get('/myOrder',userAuth,orderController.myOrder);
+userRoute.get('/downloadInvoice',userAuth,orderController.downloadInvoice);
 
 //wishList Managment
-user_route.get('/wishList',userAuth,wishListController.getWishList)
-user_route.post('/wishList',userAuth,wishListController.addToWishList);
-user_route.delete('/wishList/:productId',userAuth,wishListController.deleteWishList);
+userRoute.get('/wishList',userAuth,wishListController.getWishList)
+userRoute.post('/wishList',userAuth,wishListController.addToWishList);
+userRoute.delete('/wishList/:productId',userAuth,wishListController.deleteWishList);
 
 //wallet
 
-user_route.get('/loadWallet',userAuth,walletController.loadWalletPage)
+userRoute.get('/loadWallet',userAuth,walletController.loadWalletPage)
 
 
 
 
-module.exports = user_route;
+module.exports = userRoute;

@@ -1,5 +1,5 @@
 const express = require('express');
-const admin_route = express();
+const   adminRoute = express();
 const adminController = require('../controllers/admin/adminController');
 const customerController = require('../controllers/admin/customerController');
 const productController = require('../controllers/admin/productController');
@@ -11,11 +11,11 @@ const adminAuth = require("../middlware/adminAuth");
 const upload = require('../middlware/multer')
 const session = require('express-session');
 
-admin_route.set("view engine", "ejs");
-admin_route.set("views", "./views/admin");
-admin_route.use(express.json());
-admin_route.use(express.urlencoded({ extended: true }));
-admin_route.use(session({
+adminRoute.set("view engine", "ejs");
+adminRoute.set("views", "./views/admin");
+adminRoute.use(express.json());
+adminRoute.use(express.urlencoded({ extended: true }));
+adminRoute.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
@@ -27,69 +27,69 @@ admin_route.use(session({
 }));
 
 // Login Management
-admin_route.get('/login', adminController.loadLogin);
-admin_route.post('/login', adminController.login);
-admin_route.get('/', adminAuth, adminController.loadDashboard);
-admin_route.get('/logout', adminController.logout);
+adminRoute.get('/login', adminController.loadLogin);
+adminRoute.post('/login', adminController.login);
+adminRoute.get('/', adminAuth, adminController.loadDashboard);
+adminRoute.get('/logout', adminController.logout);
 
 // User Management
-admin_route.get('/users', adminAuth, customerController.customerDetails);
-admin_route.get('/userblock', adminAuth, customerController.toggleUserBlockStatus);
-admin_route.get('/userunblock', adminAuth, customerController.toggleUserBlockStatus);
+adminRoute.get('/users', adminAuth, customerController.customerDetails);
+adminRoute.get('/userblock', adminAuth, customerController.toggleUserBlockStatus);
+adminRoute.get('/userunblock', adminAuth, customerController.toggleUserBlockStatus);
 
 // Product Management
-admin_route.get('/products', adminAuth, productController.getProducts);
-admin_route.get('/add-product', adminAuth, productController.loadAddProduct);
-admin_route.post('/add-product', adminAuth, upload.fields([
+adminRoute.get('/products', adminAuth, productController.getProducts);
+adminRoute.get('/addProduct', adminAuth, productController.loadAddProduct);
+adminRoute.post('/addProduct', adminAuth, upload.fields([
     { name: 'productImage1', maxCount: 1 },
     { name: 'productImage2', maxCount: 1 },
     { name: 'productImage3', maxCount: 1 }
 ]), productController.addProduct);
-admin_route.get('/edit-product/:id', adminAuth, productController.getEditProduct);
-admin_route.post('/update-product/:id', adminAuth, upload.fields([
+adminRoute.get('/editProduct/:id', adminAuth, productController.getEditProduct);
+adminRoute.post('/update-product/:id', adminAuth, upload.fields([
     { name: 'productImage1', maxCount: 1 },
     { name: 'productImage2', maxCount: 1 },
     { name: 'productImage3', maxCount: 1 }
 ]), productController.updateProduct);
-admin_route.get('/listproducts', adminAuth, productController.listProduct);
-admin_route.get('/unlistproducts', adminAuth, productController.unlistProduct);
-admin_route.delete('/delete-image', adminAuth, productController.deleteImage);
-admin_route.post('/addProductOffer',adminAuth,productController.addProductOffer);
-admin_route.post('/removeProductOffer',adminAuth,productController.removeProductOffer);
+adminRoute.get('/listProducts', adminAuth, productController.listProduct);
+adminRoute.get('/unlistProducts', adminAuth, productController.unlistProduct);
+adminRoute.delete('/delete-image', adminAuth, productController.deleteImage);
+adminRoute.post('/addProductOffer',adminAuth,productController.addProductOffer);
+adminRoute.post('/removeProductOffer',adminAuth,productController.removeProductOffer);
 
 // Category Management
-admin_route.get('/category', adminAuth, categoryController.categoryDetails);
-admin_route.get('/add-Category', adminAuth, categoryController.loadAddCategory);
-admin_route.post('/add-Category', adminAuth, categoryController.addCategory);
-admin_route.get('/listCategory', adminAuth, categoryController.getListCategory);
-admin_route.get('/unlistCategory', adminAuth, categoryController.getUnListCategory);
-admin_route.get('/edit-category', adminAuth, categoryController.editCategory);
-admin_route.post('/edit-category/:id', adminAuth, categoryController.updateCategory);
-admin_route.post('/addCategoryOffer',adminAuth,categoryController.addCategoryOffer);
-admin_route.post('/removeCategoryOffer',adminAuth,categoryController.removeCategoryOffer);
+adminRoute.get('/category', adminAuth, categoryController.categoryDetails);
+adminRoute.get('/addCategory', adminAuth, categoryController.loadAddCategory);
+adminRoute.post('/addCategory', adminAuth, categoryController.addCategory);
+adminRoute.get('/listCategory', adminAuth, categoryController.getListCategory);
+adminRoute.get('/unlistCategory', adminAuth, categoryController.getUnListCategory);
+adminRoute.get('/editCategory', adminAuth, categoryController.editCategory);
+adminRoute.post('/editCategory/:id', adminAuth, categoryController.updateCategory);
+adminRoute.post('/addCategoryOffer',adminAuth,categoryController.addCategoryOffer);
+adminRoute.post('/removeCategoryOffer',adminAuth,categoryController.removeCategoryOffer);
 
 //order managment
 
-admin_route.get('/orderList', adminAuth, orderController.getOrder);
-admin_route.get('/viewOrder/:orderId', adminAuth, orderController.viewOrder);
-admin_route.post('/updateOrderStatus', adminAuth, orderController.updateOrderStatus);
+adminRoute.get('/orderList', adminAuth, orderController.getOrder);
+adminRoute.get('/viewOrder/:orderId', adminAuth, orderController.viewOrder);
+adminRoute.post('/updateOrderStatus', adminAuth, orderController.updateOrderStatus);
 
 //coupon managment
-admin_route.get('/couponList',adminAuth,couponController.getCoupon);
-admin_route.get('/add-coupon', adminAuth, couponController.loadAddCoupon);
-admin_route.post('/add-coupon', adminAuth, couponController.addCoupon);
-admin_route.get('/listCoupon', adminAuth, couponController.listCoupon);
-admin_route.get('/unlistCoupon', adminAuth, couponController.unlistCoupon);
+adminRoute.get('/couponList',adminAuth,couponController.getCoupon);
+adminRoute.get('/addCoupon', adminAuth, couponController.loadAddCoupon);
+adminRoute.post('/addCoupon', adminAuth, couponController.addCoupon);
+adminRoute.get('/listCoupon', adminAuth, couponController.listCoupon);
+adminRoute.get('/unlistCoupon', adminAuth, couponController.unlistCoupon);
 
 
 //sailes report
 
-admin_route.get('/getsalepage',adminAuth,sailesReportController.getSalesPage);
-admin_route.get('/excel',adminAuth, sailesReportController.downloadSalesReportExcel);
-admin_route.get('/pdf',adminAuth, sailesReportController.downloadSalesReportPDF);
+adminRoute.get('/getsalepage',adminAuth,sailesReportController.getSalesPage);
+adminRoute.get('/excel',adminAuth, sailesReportController.downloadSalesReportExcel);
+adminRoute.get('/pdf',adminAuth, sailesReportController.downloadSalesReportPDF);
 
 
 
 
 
-module.exports = admin_route;
+module.exports = adminRoute;

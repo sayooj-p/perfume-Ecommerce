@@ -27,7 +27,7 @@ const categoryDetails = async (req, res) => {
 };
 
 const loadAddCategory = (req, res) => {
-    res.render('add-Category');
+    res.render('addCategory');
 };
 
 const addCategory = async (req, res) => {
@@ -74,7 +74,7 @@ try {
     if(!category){
         return res.status(404).send('category not found')
     }
-    res.render('edit-category',{category})
+    res.render('editCategory',{category})
 } catch (error) {
     console.log('error in edit Category',error);
     res.status(500).json({error: 'error occured in edit the category'})

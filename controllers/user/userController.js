@@ -79,9 +79,11 @@ async function sentVerificationEmail(email, otp) {
       requireTLS: true,
       auth: {
         user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD,
+        pass: process.env.NODEMAILER_PASSWORD, // App password
       },
     });
+    console.log('transporter',transporter);
+    
 
     const info = await transporter.sendMail({
       from: process.env.NODEMAILER_EMAIL,
@@ -93,14 +95,17 @@ async function sentVerificationEmail(email, otp) {
 
     return info.accepted.length > 0;
   } catch (error) {
-    console.log("Error sending email", error);
+    console.error("Error sending email:", error);
     return false;
   }
 }
 
+
 const insertUser = async (req, res) => {
   try {
     const { name, email, password, confirmPassword, mobile } = req.body;
+    console.log('1111111111111111111111111111111',req.body);
+    
     if (password !== confirmPassword) {
       res.render("signup", { message: "Passwords do not match." });
       return;
@@ -112,6 +117,8 @@ const insertUser = async (req, res) => {
     }
     const otp = generateOtp();
     const emailSent = await sentVerificationEmail(email, otp);
+    console.log("1233333333333333333",emailSent);
+    
     if (!emailSent) {
       return res.json("email-error");
     }
@@ -296,7 +303,7 @@ const profileDetails = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const user = req.session.user;
-    res.render("edit-profile", { user });
+    res.render("editProfile", { user });
   } catch (error) {
     console.log("error to load edit profile page", error);
     res.status(400).send("error to load the edit profile page");
@@ -355,7 +362,7 @@ const logout = async (req, res) => {
 const getchangePassword = async (req, res) => {
   try {
     const user = req.session.user;
-    res.render("change-password", { error: req.query.error || null, user });
+    res.render("changePassword", { error: req.query.error || null, user });
   } catch (error) {
     console.log("error showing the change password", error);
     res.status(500).send("Internal Server Error");
@@ -408,7 +415,7 @@ const changePassword = async (req, res) => {
 const getForgetPassword = async (req, res) => {
   try {
     const user = req.session.user;
-    res.render("forget-password", { user });
+    res.render("forgetPassword", { user });
   } catch (error) {
     console.log("error to load forget password", error);
     res.status(500).send("internal server error");

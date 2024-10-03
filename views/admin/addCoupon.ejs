@@ -1,0 +1,158 @@
+<%- include('../layouts/admin/header.ejs') -%>
+
+
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Coupon Information</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li><a href="index.html"><div class="text-tiny">Dashboard</div></a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li><a href="#"><div class="text-tiny">Coupon</div></a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li><div class="text-tiny">New Coupon</div></li>
+                </ul>
+            </div>
+            <div class="wg-box">
+                <form method="post" action="/admin/addCoupon" class="form-new-product form-style-1" onsubmit="return handleFormSubmit(event)">
+                    <fieldset class="name">
+                        <div class="body-title">Coupon Code <span class="tf-color-1">*</span></div>
+                        <input class="flex-grow" type="text" placeholder="Coupon Code" id="name" name="name" tabindex="0" >
+                    </fieldset>
+                    <div id="name-error" class="error-message " style="color: red; display: flex; justify-content: center;"></div>
+
+                    <fieldset class="minprice">
+                        <div class="body-title">Minimum Price <span class="tf-color-1">*</span></div>
+                        <input class="flex-grow" type="text" placeholder="Minimum Price" id="minimumPrice" name="minimumPrice" tabindex="0" >
+                    </fieldset>
+                    <div id="minprice-error" class="error-message" style="color: red; display: flex; justify-content: center;"></div>
+
+                    <fieldset class="offerprice">
+                        <div class="body-title">Offer Price <span class="tf-color-1">*</span></div>
+                        <input class="flex-grow" type="text" placeholder="Offer Price" id="offerPrice" name="offerPrice" tabindex="0" >
+                    </fieldset>
+                    <div id="offerprice-error" class="error-message" style="color: red; display: flex; justify-content: center;"></div>
+                    
+
+                    <fieldset class="expdate">
+                        <div class="body-title">Expire Date <span class="tf-color-1">*</span></div>
+                        <input class="flex-grow" type="date" id="expireOn" name="expireOn" tabindex="0" >
+                    </fieldset>
+                    <div id="expdate-error" class="error-message" style="color: red; display: flex; justify-content: center;"></div>
+
+                    <div class="bot">
+                        <button class="tf-button w208" type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Set the minimum date in the date input to today
+    document.getElementById('expireOn').setAttribute('min', new Date().toISOString().split('T')[0]);
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
+        const name = document.getElementById('name').value.trim();
+        const minimumPrice = document.getElementById('minimumPrice').value.trim();
+        const offerPrice = document.getElementById('offerPrice').value.trim();
+        const expireOn = document.getElementById('expireOn').value;
+
+        fetch('/admin/addCoupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, minimumPrice, offerPrice, expireOn })  // Send the correct data
+        })
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: "Coupon added successfully"
+            }).then(() => {
+                window.location.href = '/admin/couponList';
+            });
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops',
+                text: error.message || 'An error occurred while adding the coupon'
+            });
+        });
+    }
+
+    function validateForm() {
+        clearErrorMessage();
+        let isValid = true;
+
+        const name = document.getElementById('name').value.trim();
+        const minimumPrice = document.getElementById('minimumPrice').value.trim();
+        const offerPrice = document.getElementById('offerPrice').value.trim();
+        const expireOn = document.getElementById('expireOn').value;
+        const currentDate = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+
+        // Name validation
+        if (name === "") {
+            displayErrorMessage('name-error', "Please enter a name");
+            isValid = false;
+        } else if (!/^[a-zA-Z0-9\s]+$/.test(name)) {
+            displayErrorMessage('name-error', "Name should be alphanumeric");
+            isValid = false;
+        }
+
+        // Minimum price validation
+        if (isNaN(minimumPrice) || minimumPrice === "") {
+            displayErrorMessage('minprice-error', "Please enter a valid minimum price");
+            isValid = false;
+        }
+
+        // Offer price validation
+        if (isNaN(offerPrice) || offerPrice === "") {
+            displayErrorMessage('offerprice-error', "Please enter a valid offer price");
+            isValid = false;
+        }
+
+        // Expiration date validation
+        if (!expireOn) {
+            displayErrorMessage('expdate-error', "Please select an expiration date");
+            isValid = false;
+        } else if (expireOn < currentDate) {
+            displayErrorMessage('expdate-error', "Expiration date cannot be in the past");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function displayErrorMessage(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.innerText = message;
+           
+        }
+    }
+
+    function clearErrorMessage() {
+        const errorElements = document.getElementsByClassName("error-message");
+        Array.from(errorElements).forEach((element) => {
+            element.innerText = "";
+            element.style.color = "none";
+        });
+    }
+</script>
+
+<%- include('../layouts/admin/footer.ejs') -%>

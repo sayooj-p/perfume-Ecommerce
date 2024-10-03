@@ -49,7 +49,7 @@
             </div>
             
             
-                <form id="checkout-form" action="/order-success" method="POST">
+                <form id="checkout-form" action="/orderSuccess" method="POST">
                     <input type="hidden" name="cartId" value="<%= cartId %>">
                     <div class="row">
                         <!-- Left Column: Manage Addresses -->
@@ -59,7 +59,7 @@
                                 <h2 class="card-title" style="margin-top: 20px; margin-left: 20px;">Delivery Address</h2>
                 
                                 <div>
-                                    <a href="/add-address"><button type="button" class="btn btn-primary btn-lg" style="width: 25%; margin-top: 25px;">Add New Address</button></a>
+                                    <a href="/addAddress"><button type="button" class="btn btn-primary btn-lg" style="width: 25%; margin-top: 25px;">Add New Address</button></a>
                                 </div>
                 
                                 <!-- Displaying Addresses -->
@@ -76,7 +76,7 @@
                                                 <!-- Edit/Delete Options (3-Dot Dropdown) -->
                                                 <div class="dropdown" style="background-color: transparent; padding: 5px; border-radius: 5px;">
                                                     <div class="dropdown-content">
-                                                        <a href="/edit-address/<%= address._id %>" style="font-size: 15px;">Edit</a>
+                                                        <a href="/editAddress/<%= address._id %>" style="font-size: 15px;">Edit</a>
                                                         <label class="radio-label">
                                                             <input type="radio" class="custom-radio" name="addressId" value="<%= address._id %>" <%= address.isActive ? 'checked' : '' %> >
                                                         </label>
@@ -288,12 +288,12 @@
 // Handle Razorpay payment if 'online-payment' is selected
 if (paymentMethodSelected.value === 'online-payment') {
     try {
-        const response = await axios.post('/create-order', {
+        const response = await axios.post('/createOrder', {
             amount: Math.round(totalPrice * 100),  // Total amount in paisa (this is before applying coupon in backend)
             couponCode: couponCode === 'No Coupon Applied' ? null : couponCode,  // Pass the applied coupon code
             cartId: "<%= cartId %>"
         });
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaa",response);
+        // console.log("aaaaaaaaaaaaaaaaaaaaaaaaa",response);
         const data = response.data;
   
         
@@ -330,7 +330,7 @@ if (paymentMethodSelected.value === 'online-payment') {
                     couponCode = couponCode === 'No Coupon Applied' ? null : couponCode;
 
                     // Call the backend to place the order with payment pending status
-                    const placeOrderResponse = await axios.post('/order-success', {
+                    const placeOrderResponse = await axios.post('/orderSuccess', {
                     paymentId: response.error.metadata.payment_id, // Razorpay payment ID (failed)
                     razorpayOrderId: response.error.metadata.order_id, // Razorpay order ID
                     signature: null, // No signature available on failed payment
@@ -350,7 +350,7 @@ if (paymentMethodSelected.value === 'online-payment') {
                     icon: 'warning',
                     confirmButtonText: 'OK'
                     }).then(() => {
-                    window.location.href = `/order-success?orderId=${orderId}`;
+                    window.location.href = `/orderSuccess?orderId=${orderId}`;
                     });
                 } catch (error) {
                     Swal.fire({
@@ -379,9 +379,9 @@ else if (paymentMethodSelected.value === 'cash-on-delivery') {
             if (totalPrice > 1000) {
                 
                 Swal.fire({
-                    title: 'Warning!',
+                  
                     text: 'Cash on Delivery is not allowed for orders above ₹1000.',
-                    icon: 'warning',
+                   
                     confirmButtonText: 'OK'
                 });
                 return; // Stop further execution
@@ -390,7 +390,7 @@ else if (paymentMethodSelected.value === 'cash-on-delivery') {
 
 
            
-            const response = await axios.post('/order-success', {
+            const response = await axios.post('/orderSuccess', {
                 addressId: addressSelected.value,
                 paymentMethod: 'cash-on-delivery',
                 couponCode: couponCode === 'No Coupon Applied' ? null : couponCode, 
@@ -408,7 +408,7 @@ else if (paymentMethodSelected.value === 'cash-on-delivery') {
                     timer: 2000,
                     showConfirmButton: false,
                 }).then(() => {
-                    window.location.href = `/order-success?orderId=${data.orderId}`;
+                    window.location.href = `/orderSuccess?orderId=${data.orderId}`;
                 });
             } else {
                 Swal.fire({
@@ -434,7 +434,7 @@ else if (paymentMethodSelected.value === 'cash-on-delivery') {
         async function initiateRepayment(orderId, amount, razorpayOrderId) {
   try {
     // Call the backend to initiate repayment (fetching necessary Razorpay details)
-    const response = await axios.post('/initiate-repayment', { orderId });
+    const response = await axios.post('/initiateRepayment', { orderId });
 
     if (response.data.success) {
       const options = {
@@ -473,7 +473,7 @@ else if (paymentMethodSelected.value === 'cash-on-delivery') {
 async function handlePaymentSuccess(paymentId, razorpayOrderId, signature) {
     try {
         let couponCode = document.querySelector('#applied-coupon-name').innerText;
-        const placeOrderResponse = await axios.post('/order-success', {
+        const placeOrderResponse = await axios.post('/orderSuccess', {
             paymentId,
             razorpayOrderId,
             signature,
@@ -488,7 +488,7 @@ async function handlePaymentSuccess(paymentId, razorpayOrderId, signature) {
         const orderId = placeOrderResponse.data.orderId;
 
         // Then, verify the payment
-        const verifyResponse = await axios.post('/verify-payment', {
+        const verifyResponse = await axios.post('/verifyPayment', {
             paymentId,
             razorpayOrderId,
             signature,
@@ -497,7 +497,7 @@ async function handlePaymentSuccess(paymentId, razorpayOrderId, signature) {
 
         if (verifyResponse.data.success) {
             // If verification is successful, redirect to order success page
-            window.location.href = `/order-success?orderId=${orderId}`;
+            window.location.href = `/orderSuccess?orderId=${orderId}`;
         } else {
             Swal.fire('Payment Verification Failed', verifyResponse.data.message, 'error');
         }
@@ -532,7 +532,7 @@ document.querySelector('.apply button').addEventListener('click', async function
     }
 
     try {
-        const response = await axios.post('/apply-coupon', { couponCode, cartTotal });
+        const response = await axios.post('/applyCoupon', { couponCode, cartTotal });
 
         if (response.data.success) {
             document.querySelector('#coupon-discount').innerText = `₹${response.data.discountAmount}`;

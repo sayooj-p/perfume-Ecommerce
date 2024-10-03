@@ -15,7 +15,7 @@ const getManageAddress = async (req, res) => {
     const userAddresses = await Address.findOne({ userId }).populate("userId");
 
     if (!userAddresses) {
-      return res.render("manage-address", { addresses: [] });
+      return res.render("manageAddress", { addresses: [] });
     }
 
     let addresses = userAddresses.address;
@@ -41,7 +41,7 @@ const getManageAddress = async (req, res) => {
     if (newlyAddedAddress) sortedAddresses.push(newlyAddedAddress);
     sortedAddresses.push(...addresses); // Append the remaining addresses
 
-    res.render("manage-address", { addresses: sortedAddresses });
+    res.render("manageAddress", { addresses: sortedAddresses });
     // console.log("Addresses fetched:", sortedAddresses);
   } catch (error) {
     console.log("Error loading the manage address page", error);
@@ -61,7 +61,7 @@ const loadAddAddress = async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    res.render("add-address", { userData });
+    res.render("addAddress", { userData });
     // console.log("User data loaded:", userData);
   } catch (error) {
     console.log("Error loading the add address page", error);
@@ -167,7 +167,7 @@ const addAddress = async (req, res) => {
       // console.log("New address document created:", newAddressDocument);
     }
 
-    res.redirect("/manage-address");
+    res.redirect("/manageAddress");
     console.log("Address added successfully");
   } catch (error) {
     console.error("Error adding the address:", error);
@@ -196,8 +196,8 @@ const editAddress = async (req, res) => {
       return res.status(404).send("Address not found");
     }
 
-    // Render the edit-address page with the found address details
-    res.render("edit-address", { address: userAddress.address[0] });
+    // Render the edit address page with the found address details
+    res.render("editAddress", { address: userAddress.address[0] });
   } catch (error) {
     console.log("Error loading edit address page", error);
     res.status(400).send("Error loading the edit profile page");
@@ -295,7 +295,7 @@ const updateAddress = async (req, res) => {
       return res.status(400).send("Address update failed");
     }
 
-    res.redirect("/manage-address");
+    res.redirect("/manageAddress");
     console.log("Address updated successfully");
   } catch (error) {
     console.error("Error updating the address:", error);

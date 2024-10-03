@@ -8,6 +8,8 @@ const PDFDocument = require('pdfkit');
 
 
 
+const moment = require('moment');  // Import moment.js
+
 const getSalesPage = async (req, res) => {
     try {
         let search = req.query.search || "";
@@ -16,64 +18,59 @@ const getSalesPage = async (req, res) => {
         const skip = (page - 1) * limit;
 
         // Get filterType and dates from query params
-        const filterType = req.query.filterType || 'daily';  // Default to daily
+        const filterType = req.query.filterType || 'daily';
         let { startDate, endDate } = req.query;
 
         // Date filter query initialization
         let dateQuery = {};
 
         // Prepare date filters based on filterType
-        const today = new Date();
-
         switch (filterType) {
             case 'daily':
-                // Set the filter to today's date
+                // Today's date range using moment.js
                 dateQuery = {
-                    $gte: new Date(today.setHours(0, 0, 0, 0)), // Start of today
-                    $lt: new Date(today.setHours(23, 59, 59, 999)) // End of today
+                    $gte: moment().startOf('day').toDate(),
+                    $lt: moment().endOf('day').toDate()
                 };
                 break;
 
             case 'weekly':
-                // Set filter to last 7 days
-                const startOfWeek = new Date(today.setDate(today.getDate() - 7));
+                // Last 7 days using moment.js
                 dateQuery = {
-                    $gte: startOfWeek,
-                    $lt: new Date() // Till today
+                    $gte: moment().startOf('isoWeek').toDate(),
+                    $lt: moment().endOf('isoWeek').toDate()
                 };
                 break;
 
             case 'yearly':
-                // Set filter to last 1 year
-                const startOfYear = new Date(today.setFullYear(today.getFullYear() - 1));
+                // This year's date range using moment.js
                 dateQuery = {
-                    $gte: startOfYear,
-                    $lt: new Date() // Till today
+                    $gte: moment().startOf('year').toDate(),
+                    $lt: moment().endOf('year').toDate()
                 };
                 break;
 
             case 'custom':
-                // Apply custom date range only if both dates are provided
                 if (startDate && endDate) {
                     dateQuery = {
-                        $gte: new Date(startDate),
-                        $lt: new Date(new Date(endDate).setHours(23, 59, 59, 999)) // End of the day for the endDate
+                        $gte: moment(startDate).startOf('day').toDate(),
+                        $lt: moment(endDate).endOf('day').toDate()
                     };
                 }
                 break;
 
             default:
-                // Default case: No date filter applied
+                // No date filter applied
                 break;
         }
 
         // Aggregations for total order amount and total discount (within date range)
         const overallOrderAmount = await Order.aggregate([
-            { $match: { createdOn: dateQuery } }, // Apply date filter
+            { $match: { createdOn: dateQuery } },
             { $group: { _id: null, totalAmount: { $sum: "$finalAmount" } } }
         ]);
         const overallDiscount = await Order.aggregate([
-            { $match: { createdOn: dateQuery } }, // Apply date filter
+            { $match: { createdOn: dateQuery } },
             { $group: { _id: null, totalDiscount: { $sum: "$discount" } } }
         ]);
 
@@ -83,7 +80,7 @@ const getSalesPage = async (req, res) => {
 
         // Fetch the filtered sales report with pagination
         const salesReport = await Order.find({
-            createdOn: dateQuery // Apply date filter to the query
+            createdOn: dateQuery
         })
             .sort({ createdOn: -1 }) // Sort by most recent orders
             .skip(skip)
@@ -94,7 +91,7 @@ const getSalesPage = async (req, res) => {
 
         // Calculate total sales count for pagination
         const salesCount = await Order.countDocuments({
-            createdOn: dateQuery // Apply date filter to count documents
+            createdOn: dateQuery
         });
         const totalPages = Math.ceil(salesCount / limit);
 
@@ -107,15 +104,16 @@ const getSalesPage = async (req, res) => {
             currentPage: page,
             totalPages,
             limit,
-            filterType,  // Pass the filter type for UI purposes
-            startDate,   // Pass the selected start date
-            endDate      // Pass the selected end date
+            filterType,
+            startDate,
+            endDate
         });
     } catch (error) {
         console.log("Error loading sales report:", error);
         res.status(500).send("Internal Server Error");
     }
 };
+
 
 const downloadSalesReportExcel = async (req, res) => {
     try {

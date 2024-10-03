@@ -28,7 +28,7 @@
     <div class="container">
       <div class="cart">
         <div class="row">
-          <div class="cart-product col-lg-9" style="border: 1px solid rgb(254, 254, 254); border-radius: 10px;  box-shadow: 3px 4px 5px #b9bdbe">
+          <div class="cart-product col-lg-9" style="border: 1px solid rgb(254, 254, 254); border-radius: 10px;">
             <% if (cartItems.length === 0) { %>
               <div class="cart-empty" style="
               align-items: center;     
@@ -64,7 +64,9 @@
               </div>
               
               </div>
+          </div>
               <% } else { %>
+                <!-- <div class="cart-product col-lg-9" style="border: 1px solid rgb(254, 254, 254); border-radius: 10px;  box-shadow: 3px 4px 5px #b9bdbe"> -->
 
             <table class="table table-cart table-mobile">
               <thead>
@@ -287,7 +289,7 @@
 // Function to update the cart item
 async function updateCartItem(productId, quantity) {
   try {
-    const response = await axios.post("/update-cart-item", {
+    const response = await axios.post("/updateCartItem", {
       productId: productId,
       quantity: quantity,
     });
