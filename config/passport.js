@@ -9,7 +9,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL:'auth/google/callback'  // Use production URL
+    callbackURL:'https://perfumparadise.online/auth/google/callback'  // Use production URL
         // Use localhost URL for development
 },
 
