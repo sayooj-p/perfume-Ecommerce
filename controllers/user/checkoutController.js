@@ -468,6 +468,8 @@ const placeOrder = async (req, res) => {
       const offerDiscount = (effectiveOffer * item.productId.price / 100) * item.quantity;
 
       totalOfferDiscount += offerDiscount;
+      // console.log(totalOfferDiscount,"=========1234456787654");
+      
       total += item.totalPrice;
       return item;
     });
@@ -476,7 +478,7 @@ const placeOrder = async (req, res) => {
 
     // Apply coupon if provided
     let couponApplied = false;
-    let discount = 0;
+    let discount = totalOfferDiscount;
 
     if (couponCode) {
       const coupon = await Coupon.findOne({ name: couponCode, isListed: true });
@@ -484,12 +486,16 @@ const placeOrder = async (req, res) => {
         couponApplied = true;
 
         if (coupon.offerPrice) {
-          discount = totalOfferDiscount + coupon.offerPrice;
+          discount += coupon.offerPrice;
           discount = discount > 0 ? discount : 0;
         }
-        finalAmount -= discount;
+        
       }
+     
     }
+    finalAmount -= discount;
+   
+    
 
     const finalAmountAfterCoupon = finalAmount;
 

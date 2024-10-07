@@ -116,7 +116,7 @@ const updateProduct = async (req, res) => {
         };
 
         // Set the status based on quantity
-        updateProductData.status = req.body.quantity > 0 ? 'In Stock' : 'Out of Stock';
+        updateProductData.status = req.body.quantity > 0 ? 'in Stock' : 'out of Stock';
 
         // Handle replacement of product images
         const existingImages = product.productImage;
