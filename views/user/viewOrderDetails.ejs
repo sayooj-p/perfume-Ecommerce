@@ -156,6 +156,7 @@
                     <%= order.status %>
                   </span>
                 </p>
+                <p><strong>Discount:</strong> <%= order.discount === 0 ? '0':order.discount %></p>
               </div>
              <div>
               <p><strong>Order Date:</strong> <%= new Date(order.createdOn).toLocaleDateString() %></p>
@@ -165,7 +166,8 @@
               <p><strong>paymentStatus:</strong> <%= order.paymentStatus %></p>
               <p><strong>couponApplied:</strong> <%= order.couponApplied === true ? 'Yes':'No'%></p>
               <p><strong>couponCode:</strong> <%= order.couponCode === null ? 'no coupon':order.couponCode%></p>
-              <p><strong>Discount:</strong> <%= order.discount === 0 ? '0':order.discount%></p>
+            
+             
 
              </div>
              </div>
